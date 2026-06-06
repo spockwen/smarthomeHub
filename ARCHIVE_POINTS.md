@@ -7,7 +7,7 @@ This file tracks all archive points (version snapshots) of the smarthomeHub proj
 ## Archive Point 0 - Initial Repository State
 
 **Date:** 2026-06-06
-**Git Commit:** 517db2a
+**Git Commit:** af37d80
 **Description:** Initial repository state after cloning from GitHub
 
 ### Changes Summary
@@ -15,6 +15,7 @@ This file tracks all archive points (version snapshots) of the smarthomeHub proj
 - Repository location: D:\Study\AI\Project\Claude\demo_6_5\Project\Demo_01
 - Branch: main
 - Status: Clean working tree, up to date with origin/main
+- Added ARCHIVE_POINTS.md file to track archive points
 
 ### Project Structure
 ```
