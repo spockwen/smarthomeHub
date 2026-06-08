@@ -4,47 +4,83 @@ import { ScenePage } from './ScenePage'
 import { AIChatPage } from './AIChatPage'
 import { ProfilePage } from './ProfilePage'
 import { DeviceStore } from '../DeviceStore'
+import { FloatingNavBar, NavItemModel } from '../components/FloatingNavBar'
 
 @Entry
 @Component
 struct Index {
   @State currentIndex: number = 0
 
-  // 应用启动时初始化全局状态
+  // 监听来自首页的导航请求
+  @Watch('onNavToSceneChange') @StorageLink('navToScene') navToScene: boolean = false
+  @Watch('onNavToDeviceChange') @StorageLink('navToDevice') navToDevice: boolean = false
+  
+  private lastIndex: number = 0
+
   aboutToAppear(): void {
     DeviceStore.initialize()
   }
+  
+  onNavToSceneChange(): void {
+    if (this.navToScene) {
+      this.currentIndex = 2
+      this.navToScene = false
+    }
+  }
+  
+  onNavToDeviceChange(): void {
+    if (this.navToDevice) {
+      this.currentIndex = 1
+      this.navToDevice = false
+    }
+  }
+  
+  // 监听导航状态变化
+  indexChange(newIndex: number): void {
+    if (this.currentIndex !== newIndex) {
+      this.lastIndex = this.currentIndex
+      this.currentIndex = newIndex
+    }
+  }
+
+  private navItems: NavItemModel[] = [
+    { title: '首页' },
+    { title: '设备' },
+    { title: '场景' },
+    { title: 'AI' },
+    { title: '我的' }
+  ]
+
+  @Builder
+  pageContent() {
+    if (this.currentIndex === 0) {
+      HomePage()
+    } else if (this.currentIndex === 1) {
+      DevicePage()
+    } else if (this.currentIndex === 2) {
+      ScenePage()
+    } else if (this.currentIndex === 3) {
+      AIChatPage()
+    } else {
+      ProfilePage()
+    }
+  }
 
   build() {
-    Tabs({
-      barPosition: BarPosition.End
-    }) {
+    Stack({ alignContent: Alignment.Bottom }) {
+      this.pageContent()
 
-      TabContent() {
-        HomePage()
-      }
-      .tabBar('首页')
-
-      TabContent() {
-        DevicePage()
-      }
-      .tabBar('设备')
-
-      TabContent() {
-        ScenePage()
-      }
-      .tabBar('场景')
-
-      TabContent() {
-        AIChatPage()
-      }
-      .tabBar('AI')
-
-      TabContent() {
-        ProfilePage()
-      }
-      .tabBar('我的')
-
+      FloatingNavBar({
+        items: this.navItems,
+        selectedIndex: this.currentIndex,
+        onIndexChange: (index: number) => {
+          this.currentIndex = index
+        }
+      })
+      .position({ bottom: 16 })
+      .padding({ left: 40, right: 40 })
     }
+    .width('100%')
+    .height('100%')
   }
 }

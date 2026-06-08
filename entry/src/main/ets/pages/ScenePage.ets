@@ -148,6 +148,10 @@ export struct ScenePage {
     } else if (sceneId === 'movie') {
       DeviceStore.setLightOn(false)
       DeviceStore.setCurtainOpen(false)
+    } else if (sceneId === 'reading') {
+      DeviceStore.setLightOn(true)
+      DeviceStore.setBedroomLightOn(true)
+      DeviceStore.setCurtainOpen(true)
     }
     
     // 显示执行提示

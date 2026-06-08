@@ -115,13 +115,6 @@ export struct HomePage {
       .alignItems(HorizontalAlign.Start)
       
       Blank()
-      
-      // AI 助手入口
-      HaloButton({
-        icon: '🤖',
-        buttonSize: 'medium',
-        type: 'ghost'
-      })
     }
     .width('100%')
     .margin({ top: Spacing.LG })
@@ -187,6 +180,10 @@ export struct HomePage {
         Text('查看全部 >')
           .fontSize(FontSize.CAPTION1)
           .fontColor(Colors.BRAND_PRIMARY)
+          .onClick(() => {
+            AppStorage.setOrCreate('navToScene', true)
+            setTimeout(() => AppStorage.setOrCreate('navToScene', false), 100)
+          })
       }
       .width('100%')
       
@@ -227,11 +224,15 @@ export struct HomePage {
         Text('管理 >')
           .fontSize(FontSize.CAPTION1)
           .fontColor(Colors.BRAND_PRIMARY)
+          .onClick(() => {
+            AppStorage.setOrCreate('navToDevice', true)
+            setTimeout(() => AppStorage.setOrCreate('navToDevice', false), 100)
+          })
       }
       .width('100%')
       
       // 设备列表
-      Column({ space: Spacing.SM }) {
+      Column({ space: 0 }) {
         ForEach(this.devices, (device: DeviceModel) => {
           DeviceCard({
             device: device,

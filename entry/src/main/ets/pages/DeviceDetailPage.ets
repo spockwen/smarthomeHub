@@ -15,6 +15,21 @@ export interface DeviceDetailParams {
   room: string
 }
 
+// 情景模式项类型
+export interface ModeItem {
+  id: string
+  name: string
+  icon: string
+  color: string
+}
+
+// 定时项类型
+export interface TimerItemData {
+  time: string
+  action: string
+  enabled: boolean
+}
+
 @Entry
 @Component
 export struct DeviceDetailPage {
@@ -25,40 +40,46 @@ export struct DeviceDetailPage {
     icon: '💡',
     room: '客厅'
   }
-  
+
   // 设备状态
   @State private isOn: boolean = true
-  @State private brightness: number = 80
+  @State private brightnessLevel: number = 80  // 重命名避免与基类属性冲突
   @State private colorTemp: number = 4000  // 色温 (K)
   @State private selectedMode: string = 'normal'
-  
-  // 情景模式
-  private readonly modes = [
+
+  // 情景模式 - 添加明确泛型类型
+  private readonly modes: ModeItem[] = [
     { id: 'normal', name: '日常', icon: '☀️', color: Colors.BRAND_PRIMARY },
     { id: 'reading', name: '阅读', icon: '📖', color: '#FFB800' },
     { id: 'relax', name: '休闲', icon: '🌙', color: '#8B5CF6' },
     { id: 'night', name: '夜灯', icon: '🌃', color: '#6B7280' }
   ]
-  
+
+  // 定时列表 - 使用明确类型数组
+  @State private timerList: TimerItemData[] = [
+    { time: '07:00', action: '自动开启', enabled: true },
+    { time: '22:00', action: '自动关闭', enabled: true }
+  ]
+
   build() {
     Column() {
       // 顶部导航栏
       this.NavigationBar()
-      
+
       Scroll() {
         Column({ space: Spacing.XL }) {
           // 设备状态卡片
           this.StatusCard()
-          
+
           // 亮度调节
           this.BrightnessSection()
-          
+
           // 色温调节
           this.ColorTempSection()
-          
+
           // 情景模式
           this.ModeSection()
-          
+
           // 定时设置
           this.TimerSection()
         }
@@ -72,7 +93,7 @@ export struct DeviceDetailPage {
     .height('100%')
     .backgroundColor(Colors.BG_LIGHT)
   }
-  
+
   // 导航栏
   @Builder NavigationBar() {
     Row() {
@@ -81,16 +102,16 @@ export struct DeviceDetailPage {
         buttonSize: 'medium',
         type: 'ghost'
       })
-      
+
       Blank()
-      
+
       Text(this.deviceParams.name)
         .fontSize(FontSize.TITLE3)
         .fontWeight(600)
         .fontColor(Colors.TEXT_PRIMARY_LIGHT)
-      
+
       Blank()
-      
+
       HaloButton({
         icon: '⚙️',
         buttonSize: 'medium',
@@ -102,7 +123,7 @@ export struct DeviceDetailPage {
     .padding({ left: Spacing.SM, right: Spacing.SM })
     .backgroundColor(Colors.SURFACE_LIGHT)
   }
-  
+
   // 设备状态卡片
   @Builder StatusCard() {
     Column({ space: Spacing.LG }) {
@@ -112,14 +133,14 @@ export struct DeviceDetailPage {
           Text(this.deviceParams.icon)
             .fontSize(64)
             .opacity(this.isOn ? 1 : 0.5)
-          
+
           Text(this.isOn ? '运行中' : '已关闭')
             .fontSize(FontSize.BODY2)
             .fontColor(this.isOn ? Colors.SUCCESS : Colors.TEXT_SECONDARY_LIGHT)
         }
-        
+
         Blank()
-        
+
         // 开关
         Column({ space: 8 }) {
           HaloToggle({
@@ -131,12 +152,12 @@ export struct DeviceDetailPage {
         }
       }
       .width('100%')
-      
+
       // 房间信息
       Row() {
         Text('📍')
           .fontSize(16)
-        
+
         Text(this.deviceParams.room)
           .fontSize(FontSize.BODY2)
           .fontColor(Colors.TEXT_SECONDARY_LIGHT)
@@ -153,29 +174,29 @@ export struct DeviceDetailPage {
       offsetY: 4
     })
   }
-  
+
   // 亮度调节
   @Builder BrightnessSection() {
     Column({ space: Spacing.MD }) {
       Row() {
         Text('💡')
           .fontSize(20)
-        
+
         Text('亮度')
           .fontSize(FontSize.BODY1)
           .fontWeight(600)
           .fontColor(Colors.TEXT_PRIMARY_LIGHT)
       }
-      
+
       HaloSlider({
-        value: this.brightness,
+        value: this.brightnessLevel,
         min: 0,
         max: 100,
         step: 5,
         showValue: true,
         unit: '%',
         onChange: (value: number) => {
-          this.brightness = value
+          this.brightnessLevel = value
         }
       })
     }
@@ -184,20 +205,20 @@ export struct DeviceDetailPage {
     .borderRadius(BorderRadius.LARGE)
     .backgroundColor(Colors.SURFACE_LIGHT)
   }
-  
+
   // 色温调节
   @Builder ColorTempSection() {
     Column({ space: Spacing.MD }) {
       Row() {
         Text('🎨')
           .fontSize(20)
-        
+
         Text('色温')
           .fontSize(FontSize.BODY1)
           .fontWeight(600)
           .fontColor(Colors.TEXT_PRIMARY_LIGHT)
       }
-      
+
       HaloSlider({
         value: this.colorTemp,
         min: 2700,
@@ -209,7 +230,7 @@ export struct DeviceDetailPage {
           this.colorTemp = value
         }
       })
-      
+
       // 色温预览
       Row({ space: Spacing.SM }) {
         Column()
@@ -217,7 +238,7 @@ export struct DeviceDetailPage {
           .height(20)
           .borderRadius(BorderRadius.SMALL)
           .backgroundColor('#FFA500')  // 暖光
-        
+
         Column()
           .width('100%')
           .height(20)
@@ -230,7 +251,7 @@ export struct DeviceDetailPage {
               ['#87CEEB', 1]
             ]
           })
-        
+
         Column()
           .width(40)
           .height(20)
@@ -244,29 +265,29 @@ export struct DeviceDetailPage {
     .borderRadius(BorderRadius.LARGE)
     .backgroundColor(Colors.SURFACE_LIGHT)
   }
-  
+
   // 情景模式
   @Builder ModeSection() {
     Column({ space: Spacing.MD }) {
       Row() {
         Text('🎭')
           .fontSize(20)
-        
+
         Text('情景模式')
           .fontSize(FontSize.BODY1)
           .fontWeight(600)
           .fontColor(Colors.TEXT_PRIMARY_LIGHT)
       }
       .width('100%')
-      
+
       // 模式网格
       Grid() {
-        ForEach(this.modes, (mode: { id: string, name: string, icon: string, color: string }) => {
+        ForEach(this.modes, (mode: ModeItem) => {
           GridItem() {
             Column({ space: 8 }) {
               Text(mode.icon)
                 .fontSize(32)
-              
+
               Text(mode.name)
                 .fontSize(FontSize.CAPTION1)
                 .fontColor(this.selectedMode === mode.id ? Colors.TEXT_PRIMARY_LIGHT : Colors.TEXT_SECONDARY_LIGHT)
@@ -295,21 +316,21 @@ export struct DeviceDetailPage {
     .borderRadius(BorderRadius.LARGE)
     .backgroundColor(Colors.SURFACE_LIGHT)
   }
-  
+
   // 定时设置
   @Builder TimerSection() {
     Column({ space: Spacing.MD }) {
       Row() {
         Text('⏰')
           .fontSize(20)
-        
+
         Text('定时设置')
           .fontSize(FontSize.BODY1)
           .fontWeight(600)
           .fontColor(Colors.TEXT_PRIMARY_LIGHT)
-        
+
         Blank()
-        
+
         HaloButton({
           label: '添加',
           buttonSize: 'small',
@@ -317,11 +338,12 @@ export struct DeviceDetailPage {
         })
       }
       .width('100%')
-      
+
       // 定时列表
       Column({ space: Spacing.SM }) {
-        this.TimerItem('07:00', '自动开启', true)
-        this.TimerItem('22:00', '自动关闭', true)
+        ForEach(this.timerList, (timer: TimerItemData, index: number) => {
+          this.TimerItem(timer, index)
+        })
       }
       .width('100%')
     }
@@ -330,24 +352,27 @@ export struct DeviceDetailPage {
     .borderRadius(BorderRadius.LARGE)
     .backgroundColor(Colors.SURFACE_LIGHT)
   }
-  
+
   // 定时项
-  @Builder TimerItem(time: string, action: string, enabled: boolean) {
+  @Builder TimerItem(timer: TimerItemData, index: number) {
     Row() {
-      Text(time)
+      Text(timer.time)
         .fontSize(FontSize.TITLE3)
         .fontWeight(600)
         .fontColor(Colors.TEXT_PRIMARY_LIGHT)
-      
-      Text(action)
+
+      Text(timer.action)
         .fontSize(FontSize.BODY2)
         .fontColor(Colors.TEXT_SECONDARY_LIGHT)
         .margin({ left: Spacing.SM })
-      
+
       Blank()
-      
+
       HaloToggle({
-        isOn: enabled
+        isOn: timer.enabled,
+        onChange: (value: boolean) => {
+          this.timerList[index] = { time: timer.time, action: timer.action, enabled: value }
+        }
       })
     }
     .width('100%')

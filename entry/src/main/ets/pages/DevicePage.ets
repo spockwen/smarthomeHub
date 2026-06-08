@@ -20,10 +20,15 @@ interface CategoryItem {
 export struct DevicePage {
   // 全局状态
   @StorageLink('lightOn') lightOn: boolean = true
+  @StorageLink('bedroomLightOn') bedroomLightOn: boolean = false
+  @StorageLink('kitchenLightOn') kitchenLightOn: boolean = true
   @StorageLink('airOn') airOn: boolean = false
+  @StorageLink('heaterOn') heaterOn: boolean = false
   @StorageLink('doorLocked') doorLocked: boolean = true
   @StorageLink('curtainOpen') curtainOpen: boolean = false
+  @StorageLink('cameraOn') cameraOn: boolean = true
   @StorageLink('socketOn') socketOn: boolean = true
+  @StorageLink('tvOn') tvOn: boolean = false
   
   // 当前分类
   @State private currentCategory: DeviceCategory = 'all'
@@ -89,14 +94,24 @@ export struct DevicePage {
     // 同步到全局状态
     if (deviceId === 'light1') {
       DeviceStore.setLightOn(isOn)
+    } else if (deviceId === 'light2') {
+      DeviceStore.setBedroomLightOn(isOn)
+    } else if (deviceId === 'light3') {
+      DeviceStore.setKitchenLightOn(isOn)
     } else if (deviceId === 'air') {
       DeviceStore.setAirOn(isOn)
+    } else if (deviceId === 'heater') {
+      DeviceStore.setHeaterOn(isOn)
     } else if (deviceId === 'door') {
       DeviceStore.setDoorLocked(isOn)
+    } else if (deviceId === 'camera') {
+      DeviceStore.setCameraOn(isOn)
     } else if (deviceId === 'curtain') {
       DeviceStore.setCurtainOpen(isOn)
     } else if (deviceId === 'socket') {
       DeviceStore.setSocketOn(isOn)
+    } else if (deviceId === 'tv') {
+      DeviceStore.setTvOn(isOn)
     }
   }
   
@@ -110,7 +125,7 @@ export struct DevicePage {
       
       // 设备列表
       Scroll() {
-        Column({ space: Spacing.SM }) {
+        Column({ space: 4 }) {
           ForEach(this.getFilteredDevices(), (device: DeviceModel) => {
             DeviceCard({
               device: device,
