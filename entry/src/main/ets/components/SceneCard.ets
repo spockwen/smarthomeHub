@@ -37,68 +37,6 @@ export struct SceneCard {
   // 内部状态
   @State private isHovered: boolean = false
   @State private isPressed: boolean = false
-  @State private glowPulse: number = 0  // 呼吸动画相位
-  @State private activationProgress: number = 0  // 激活进度（0-1）
-  
-  // 定时器ID
-  private breathingTimer: number = -1
-  private activationTimer: number = -1
-  
-  aboutToAppear(): void {
-    // 如果场景已激活，启动呼吸动画
-    if (this.scene.isActive) {
-      this.startBreathingAnimation()
-      this.activationProgress = 1
-    }
-  }
-  
-  aboutToDisappear(): void {
-    this.cleanupTimers()
-  }
-  
-  // 清理定时器
-  private cleanupTimers(): void {
-    if (this.breathingTimer !== -1) {
-      clearInterval(this.breathingTimer)
-      this.breathingTimer = -1
-    }
-    if (this.activationTimer !== -1) {
-      clearInterval(this.activationTimer)
-      this.activationTimer = -1
-    }
-  }
-  
-  // 启动呼吸动画
-  private startBreathingAnimation(): void {
-    this.breathingTimer = setInterval(() => {
-      this.glowPulse = (this.glowPulse + 0.08) % (2 * Math.PI)
-    }, 50)
-  }
-  
-  // 停止呼吸动画
-  private stopBreathingAnimation(): void {
-    if (this.breathingTimer !== -1) {
-      clearInterval(this.breathingTimer)
-      this.breathingTimer = -1
-    }
-  }
-  
-  // 触发激活动画
-  private triggerActivation(): void {
-    // 启动激活进度动画
-    this.activationProgress = 0
-    this.activationTimer = setInterval(() => {
-      if (this.activationProgress < 1) {
-        this.activationProgress += 0.05
-      } else {
-        this.activationProgress = 1
-        if (this.activationTimer !== -1) {
-          clearInterval(this.activationTimer)
-          this.activationTimer = -1
-        }
-      }
-    }, 20)
-  }
   
   // 计算光晕参数
   private getGlowParams(): GlowParams {
@@ -108,12 +46,6 @@ export struct SceneCard {
     
     if (this.isHovered) {
       return { blur: GlowConfig.GLOW_BLUR_HOVER, opacity: GlowConfig.GLOW_OPACITY_HOVER }
-    }
-    
-    if (this.scene.isActive) {
-      // 呼吸动画影响透明度
-      const breatheOpacity = 0.3 + 0.15 * Math.sin(this.glowPulse)
-      return { blur: GlowConfig.GLOW_BLUR_ACTIVE, opacity: breatheOpacity }
     }
     
     return { blur: 0, opacity: 0 }
@@ -147,23 +79,6 @@ export struct SceneCard {
             duration: 200,
             curve: Curve.EaseOut
           })
-      }
-      
-      // 激活态扩散光效
-      if (this.scene.isActive && this.activationProgress > 0) {
-        Column()
-          .width(`${100 + this.activationProgress * 20}%`)
-          .height(`${100 + this.activationProgress * 20}%`)
-          .borderRadius(BorderRadius.LARGE)
-          .linearGradient({
-            angle: 135,
-            colors: [
-              [this.scene.color + '40', 0],
-              ['transparent', 1]
-            ]
-          })
-          .opacity(0.3 * this.activationProgress)
-          .blur(15)
       }
       
       // 第二层：卡片主体
@@ -246,14 +161,6 @@ export struct SceneCard {
         this.isPressed = true
       } else if (event.type === TouchType.Up) {
         this.isPressed = false
-        
-        // 触发激活动画
-        if (!this.scene.isActive) {
-          this.triggerActivation()
-          this.startBreathingAnimation()
-        } else {
-          this.stopBreathingAnimation()
-        }
         
         if (this.onTap) {
           this.onTap()

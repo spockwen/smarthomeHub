@@ -3,6 +3,7 @@ import { DevicePage } from './DevicePage'
 import { ScenePage } from './ScenePage'
 import { AIChatPage } from './AIChatPage'
 import { ProfilePage } from './ProfilePage'
+import { StorePage } from './StorePage'
 import { DeviceStore } from '../DeviceStore'
 import { FloatingNavBar, NavItemModel } from '../components/FloatingNavBar'
 
@@ -47,6 +48,7 @@ struct Index {
     { title: '首页' },
     { title: '设备' },
     { title: '场景' },
+    { title: '商城' },
     { title: 'AI' },
     { title: '我的' }
   ]
@@ -60,6 +62,8 @@ struct Index {
     } else if (this.currentIndex === 2) {
       ScenePage()
     } else if (this.currentIndex === 3) {
+      StorePage()
+    } else if (this.currentIndex === 4) {
       AIChatPage()
     } else {
       ProfilePage()

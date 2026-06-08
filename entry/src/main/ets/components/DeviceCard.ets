@@ -53,43 +53,16 @@ export struct DeviceCard {
   @State private isHovered: boolean = false
   @State private isPressed: boolean = false
   @State private deviceState: boolean = false  // 设备开关状态
-  @State private glowPulse: number = 0  // 呼吸动画相位
   @State private touchX: number = 0
   @State private touchY: number = 0
-  
-  // 定时器ID
-  private breathingTimer: number = -1
   
   // 初始化设备状态
   aboutToAppear(): void {
     this.deviceState = this.device.isOn
-    
-    // 启动呼吸动画
-    if (this.deviceState && this.device.status !== 'offline') {
-      this.startBreathingAnimation()
-    }
   }
   
   aboutToDisappear(): void {
-    // 清理定时器
-    if (this.breathingTimer !== -1) {
-      clearInterval(this.breathingTimer)
-    }
-  }
-  
-  // 启动呼吸动画
-  private startBreathingAnimation(): void {
-    this.breathingTimer = setInterval(() => {
-      this.glowPulse = (this.glowPulse + 0.05) % (2 * Math.PI)
-    }, 50)
-  }
-  
-  // 停止呼吸动画
-  private stopBreathingAnimation(): void {
-    if (this.breathingTimer !== -1) {
-      clearInterval(this.breathingTimer)
-      this.breathingTimer = -1
-    }
+    // 清理操作（无定时器）
   }
   
   // 计算卡片背景色
@@ -117,9 +90,7 @@ export struct DeviceCard {
       return { blur: GlowConfig.GLOW_BLUR_HOVER, opacity: GlowConfig.GLOW_OPACITY_HOVER }
     }
     
-    // 呼吸动画影响透明度
-    const breatheOpacity = 0.3 + 0.1 * Math.sin(this.glowPulse)
-    return { blur: GlowConfig.GLOW_BLUR_ACTIVE, opacity: breatheOpacity }
+    return { blur: GlowConfig.GLOW_BLUR_ACTIVE, opacity: 0.3 }
   }
   
   // 计算缩放比例
@@ -205,11 +176,6 @@ export struct DeviceCard {
             disabled: this.device.status === 'offline',
             onChange: (value: boolean) => {
               this.deviceState = value
-              if (value) {
-                this.startBreathingAnimation()
-              } else {
-                this.stopBreathingAnimation()
-              }
               if (this.onToggle) {
                 this.onToggle(value)
               }

@@ -1,6 +1,6 @@
 /**
  * 沉浸光感开关组件
- * 实现扫动光效的状态切换 + 光线流动效果
+ * 简洁的状态切换开关
  */
 import { Colors, GlowConfig, BorderRadius, ComponentSize } from '../common/DesignConstants'
 
@@ -17,38 +17,12 @@ export struct HaloToggle {
   @State private isHovered: boolean = false
   @State private isPressed: boolean = false
   @State private thumbOffset: number = 0  // 拖拽偏移量
-  @State private lightFlowPosition: number = 0  // 光线流动位置
-  @State private glowIntensity: number = 0  // 光晕强度
   
   // 开关尺寸
   private readonly WIDTH = ComponentSize.TOGGLE_WIDTH
   private readonly HEIGHT = ComponentSize.TOGGLE_HEIGHT
   private readonly THUMB_SIZE = ComponentSize.TOGGLE_THUMB_SIZE
   private readonly TRACK_PADDING = 2  // 轨道内边距
-  
-  // 定时器ID
-  private lightFlowTimer: number = -1
-  
-  aboutToAppear(): void {
-    // 启动光线流动动画
-    this.startLightFlowAnimation()
-  }
-  
-  aboutToDisappear(): void {
-    if (this.lightFlowTimer !== -1) {
-      clearInterval(this.lightFlowTimer)
-    }
-  }
-  
-  // 启动光线流动动画
-  private startLightFlowAnimation(): void {
-    this.lightFlowTimer = setInterval(() => {
-      if (this.isOn) {
-        this.lightFlowPosition = (this.lightFlowPosition + 2) % 100
-        this.glowIntensity = 0.3 + 0.1 * Math.sin(this.lightFlowPosition * 0.1)
-      }
-    }, 30)
-  }
   
   // 计算滑块位置
   private getThumbPosition(): number {
@@ -89,7 +63,7 @@ export struct HaloToggle {
               ['transparent', 1]
             ]
           })
-          .opacity(this.glowIntensity)
+          .opacity(0.5)
           .blur(this.getGlowBlur())
       }
       
@@ -109,24 +83,6 @@ export struct HaloToggle {
               ]
             })
             .opacity(0.4)
-        }
-        
-        // 流动光线效果
-        if (this.isOn && !this.disabled) {
-          Row()
-            .width(20)
-            .height('100%')
-            .borderRadius(BorderRadius.FULL)
-            .linearGradient({
-              angle: 90,
-              colors: [
-                ['transparent', 0],
-                ['rgba(255, 255, 255, 0.6)', 0.5],
-                ['transparent', 1]
-              ]
-            })
-            .margin({ left: `${this.lightFlowPosition}%` })
-            .blur(4)
         }
         
         // 滑块
@@ -156,10 +112,6 @@ export struct HaloToggle {
             })
         }
         .margin({ left: this.TRACK_PADDING + this.getThumbPosition() })
-        .animation({
-          duration: GlowConfig.ANIM_DURATION_NORMAL,
-          curve: Curve.FastOutSlowIn
-        })
       }
       .width(this.WIDTH)
       .height(this.HEIGHT)
@@ -169,10 +121,6 @@ export struct HaloToggle {
     }
     .width(this.WIDTH + 20)
     .height(this.HEIGHT + 20)
-    .animation({
-      duration: GlowConfig.ANIM_DURATION_NORMAL,
-      curve: Curve.EaseOut
-    })
     .enabled(!this.disabled)
     .hitTestBehavior(HitTestMode.Block)
     .onHover((isHover: boolean) => {

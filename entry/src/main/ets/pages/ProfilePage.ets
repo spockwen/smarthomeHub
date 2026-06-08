@@ -4,6 +4,7 @@
  */
 import { Colors, FontSize, Spacing, BorderRadius, GlowConfig } from '../common/DesignConstants'
 import { HaloButton } from '../components/HaloButton'
+import router from '@ohos.router'
 
 // 设置项数据模型
 interface SettingItem {
@@ -28,6 +29,7 @@ export struct ProfilePage {
   private readonly settings: SettingItem[] = [
     { id: 'family', icon: '🏠', title: '家庭管理', subtitle: '默认家庭', showArrow: true },
     { id: 'devices', icon: '📱', title: '我的设备', subtitle: '12台设备', showArrow: true },
+    { id: 'store', icon: '🛒', title: '商品管理', subtitle: '智能设备商城', showArrow: true },
     { id: 'energy', icon: '📊', title: '能耗统计', subtitle: '今日 8.5kWh', showArrow: true, badge: 'NEW' },
     { id: 'security', icon: '🔐', title: '安全中心', subtitle: '设备状态：安全', showArrow: true },
     { id: 'notification', icon: '🔔', title: '消息通知', showArrow: true, badge: '3' },
