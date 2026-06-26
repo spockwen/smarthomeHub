@@ -144,11 +144,6 @@ export struct StorePage {
         .height(40)
         .backgroundColor(Colors.WHITE)
         .borderRadius(20)
-        .stateStyles({
-          pressed: {
-            backgroundColor: '#F0F0F0'
-          }
-        })
       }
       .onClick(() => {
         router.pushUrl({ url: 'pages/CartPage' })
@@ -321,11 +316,6 @@ export struct StorePage {
           .padding(8)
           .backgroundColor(Colors.BRAND)
           .borderRadius(16)
-          .stateStyles({
-            pressed: {
-              backgroundColor: '#0E4BCC'
-            }
-          })
           .onClick(() => {
             this.addToCart(product)
           })
@@ -360,9 +350,13 @@ export struct StorePage {
   }
 
   addToCart(product: Product) {
-    this.cartService.addToCart(product)
-    this.updateCartCount()
-    prompt.showToast({ message: '已添加到购物车' })
+    const success = this.cartService.addToCart(product)
+    if (success) {
+      this.updateCartCount()
+      prompt.showToast({ message: '已添加到购物车' })
+    } else {
+      prompt.showToast({ message: '库存不足，无法添加' })
+    }
   }
 
   showProductDetail(product: Product) {

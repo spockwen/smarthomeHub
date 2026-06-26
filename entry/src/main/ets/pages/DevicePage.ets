@@ -5,6 +5,7 @@
 import { DeviceStore } from '../DeviceStore'
 import { Colors, FontSize, Spacing, BorderRadius } from '../common/DesignConstants'
 import { DeviceCard, DeviceModel } from '../components/DeviceCard'
+import router from '@ohos.router'
 
 // 设备分类
 type DeviceCategory = 'all' | 'light' | 'climate' | 'security' | 'appliance'
@@ -173,6 +174,9 @@ export struct DevicePage {
       .padding({ left: 12, right: 12, top: 8, bottom: 8 })
       .borderRadius(BorderRadius.MEDIUM)
       .backgroundColor(Colors.BRAND_PRIMARY + '10')  // 6% 透明度
+      .onClick(() => {
+        router.pushUrl({ url: 'pages/DeviceAddPage' })
+      })
     }
     .width('100%')
     .height(56)

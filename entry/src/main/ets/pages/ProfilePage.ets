@@ -285,8 +285,8 @@ export struct ProfilePage {
         })
         break
       case 'store':
-        // 商品管理 - 跳转到购物车页面
-        router.pushUrl({ url: 'pages/CartPage' })
+        // 跳转到商城页面
+        router.pushUrl({ url: 'pages/StorePage' })
         break
       case 'energy':
         AlertDialog.show({
