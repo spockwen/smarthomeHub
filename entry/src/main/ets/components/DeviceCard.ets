@@ -33,8 +33,15 @@ interface GlowOffset {
 
 @Component
 export struct DeviceCard {
-  // 设备数据
-  @Prop device: DeviceModel = {
+  // 内部状态
+  @State private isHovered: boolean = false
+  @State private isPressed: boolean = false
+  @State private deviceState: boolean = false  // 设备开关状态
+  @State private touchX: number = 0
+  @State private touchY: number = 0
+  
+  // 监听设备数据变化
+  @Watch('onDeviceChange') @Prop device: DeviceModel = {
     id: '',
     name: '设备',
     icon: '💡',
@@ -42,6 +49,7 @@ export struct DeviceCard {
     status: 'online',
     isOn: false
   }
+  
   // 是否紧凑模式（用于首页）
   @Prop compact: boolean = false
   // 点击回调
@@ -49,12 +57,10 @@ export struct DeviceCard {
   // 状态变化回调
   onToggle?: (isOn: boolean) => void
   
-  // 内部状态
-  @State private isHovered: boolean = false
-  @State private isPressed: boolean = false
-  @State private deviceState: boolean = false  // 设备开关状态
-  @State private touchX: number = 0
-  @State private touchY: number = 0
+  // 设备数据变化时更新内部状态
+  private onDeviceChange(): void {
+    this.deviceState = this.device.isOn
+  }
   
   // 初始化设备状态
   aboutToAppear(): void {

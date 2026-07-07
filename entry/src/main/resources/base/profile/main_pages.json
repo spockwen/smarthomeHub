@@ -5,6 +5,10 @@
     "pages/CartPage",
     "pages/DeviceAddPage",
     "pages/SceneDetailPage",
-    "pages/SceneCreatePage"
+    "pages/SceneCreatePage",
+    "pages/TemperaturePage",
+    "pages/HumidityPage",
+    "pages/PowerUsagePage",
+    "pages/OnlineDevicesPage"
   ]
 }

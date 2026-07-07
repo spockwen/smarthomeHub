@@ -43,24 +43,28 @@ export struct DevicePage {
     { id: 'appliance', name: '家电', icon: '🔌' } as CategoryItem
   ]
   
-  // 设备列表
-  @State private devices: DeviceModel[] = [
-    { id: 'light1', name: '客厅灯', icon: '💡', room: '客厅', status: 'online', isOn: true, value: '亮度 80%' } as DeviceModel,
-    { id: 'light2', name: '卧室灯', icon: '💡', room: '卧室', status: 'online', isOn: false, value: '已关闭' } as DeviceModel,
-    { id: 'light3', name: '厨房灯', icon: '💡', room: '厨房', status: 'online', isOn: true, value: '亮度 60%' } as DeviceModel,
-    { id: 'air', name: '空调', icon: '❄️', room: '客厅', status: 'online', isOn: false, value: '26℃' } as DeviceModel,
-    { id: 'heater', name: '地暖', icon: '🔥', room: '客厅', status: 'offline', isOn: false, value: '离线' } as DeviceModel,
-    { id: 'door', name: '智能门锁', icon: '🚪', room: '入户', status: 'online', isOn: true, value: '已上锁' } as DeviceModel,
-    { id: 'camera', name: '摄像头', icon: '📹', room: '客厅', status: 'online', isOn: true, value: '监控中' } as DeviceModel,
-    { id: 'curtain', name: '智能窗帘', icon: '🪟', room: '客厅', status: 'online', isOn: false, value: '已关闭' } as DeviceModel,
-    { id: 'socket', name: '智能插座', icon: '🔌', room: '卧室', status: 'online', isOn: true, value: '供电中' } as DeviceModel,
-    { id: 'tv', name: '智能电视', icon: '📺', room: '客厅', status: 'online', isOn: false, value: '待机' } as DeviceModel
-  ]
+  // 动态获取设备列表（响应全局状态）
+  private getDevices(): DeviceModel[] {
+    return [
+      { id: 'light1', name: '客厅灯', icon: '💡', room: '客厅', status: 'online', isOn: this.lightOn, value: '亮度 80%' } as DeviceModel,
+      { id: 'light2', name: '卧室灯', icon: '💡', room: '卧室', status: 'online', isOn: this.bedroomLightOn, value: '已关闭' } as DeviceModel,
+      { id: 'light3', name: '厨房灯', icon: '💡', room: '厨房', status: 'online', isOn: this.kitchenLightOn, value: '亮度 60%' } as DeviceModel,
+      { id: 'air', name: '空调', icon: '❄️', room: '客厅', status: 'online', isOn: this.airOn, value: '26℃' } as DeviceModel,
+      { id: 'heater', name: '地暖', icon: '🔥', room: '客厅', status: 'offline', isOn: this.heaterOn, value: '离线' } as DeviceModel,
+      { id: 'door', name: '智能门锁', icon: '🚪', room: '入户', status: 'online', isOn: this.doorLocked, value: '已上锁' } as DeviceModel,
+      { id: 'camera', name: '摄像头', icon: '📹', room: '客厅', status: 'online', isOn: this.cameraOn, value: '监控中' } as DeviceModel,
+      { id: 'curtain', name: '智能窗帘', icon: '🪟', room: '客厅', status: 'online', isOn: this.curtainOpen, value: '已关闭' } as DeviceModel,
+      { id: 'socket', name: '智能插座', icon: '🔌', room: '卧室', status: 'online', isOn: this.socketOn, value: '供电中' } as DeviceModel,
+      { id: 'tv', name: '智能电视', icon: '📺', room: '客厅', status: 'online', isOn: this.tvOn, value: '待机' } as DeviceModel
+    ]
+  }
   
   // 获取过滤后的设备列表
   private getFilteredDevices(): DeviceModel[] {
+    const devices = this.getDevices()
+    
     if (this.currentCategory === 'all') {
-      return this.devices
+      return devices
     }
     
     // 根据分类过滤
@@ -72,48 +76,7 @@ export struct DevicePage {
     }
     
     const icons = categoryMap[this.currentCategory] || []
-    return this.devices.filter(device => icons.includes(device.icon))
-  }
-  
-  // 更新设备状态
-  private updateDeviceState(deviceId: string, isOn: boolean) {
-    this.devices = this.devices.map(device => {
-      if (device.id === deviceId) {
-        return {
-          id: device.id,
-          name: device.name,
-          icon: device.icon,
-          room: device.room,
-          status: device.status,
-          isOn: isOn,
-          value: device.value
-        }
-      }
-      return device
-    })
-    
-    // 同步到全局状态
-    if (deviceId === 'light1') {
-      DeviceStore.setLightOn(isOn)
-    } else if (deviceId === 'light2') {
-      DeviceStore.setBedroomLightOn(isOn)
-    } else if (deviceId === 'light3') {
-      DeviceStore.setKitchenLightOn(isOn)
-    } else if (deviceId === 'air') {
-      DeviceStore.setAirOn(isOn)
-    } else if (deviceId === 'heater') {
-      DeviceStore.setHeaterOn(isOn)
-    } else if (deviceId === 'door') {
-      DeviceStore.setDoorLocked(isOn)
-    } else if (deviceId === 'camera') {
-      DeviceStore.setCameraOn(isOn)
-    } else if (deviceId === 'curtain') {
-      DeviceStore.setCurtainOpen(isOn)
-    } else if (deviceId === 'socket') {
-      DeviceStore.setSocketOn(isOn)
-    } else if (deviceId === 'tv') {
-      DeviceStore.setTvOn(isOn)
-    }
+    return devices.filter(device => icons.includes(device.icon))
   }
   
   build() {
@@ -135,7 +98,28 @@ export struct DevicePage {
                 console.info(`Navigate to device detail: ${device.id}`)
               },
               onToggle: (isOn: boolean) => {
-                this.updateDeviceState(device.id, isOn)
+                // 直接更新全局状态
+                if (device.id === 'light1') {
+                  DeviceStore.setLightOn(isOn)
+                } else if (device.id === 'light2') {
+                  DeviceStore.setBedroomLightOn(isOn)
+                } else if (device.id === 'light3') {
+                  DeviceStore.setKitchenLightOn(isOn)
+                } else if (device.id === 'air') {
+                  DeviceStore.setAirOn(isOn)
+                } else if (device.id === 'heater') {
+                  DeviceStore.setHeaterOn(isOn)
+                } else if (device.id === 'door') {
+                  DeviceStore.setDoorLocked(isOn)
+                } else if (device.id === 'camera') {
+                  DeviceStore.setCameraOn(isOn)
+                } else if (device.id === 'curtain') {
+                  DeviceStore.setCurtainOpen(isOn)
+                } else if (device.id === 'socket') {
+                  DeviceStore.setSocketOn(isOn)
+                } else if (device.id === 'tv') {
+                  DeviceStore.setTvOn(isOn)
+                }
               }
             })
           })
