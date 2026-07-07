@@ -284,6 +284,10 @@ export struct ProfilePage {
           message: '当前已接入设备：12台\n包括灯光、空调、门锁、窗帘、插座等设备'
         })
         break
+      case 'store':
+        // 跳转到商城页面
+        router.pushUrl({ url: 'pages/StorePage' })
+        break
       case 'energy':
         AlertDialog.show({
           title: '能耗统计',

@@ -22,6 +22,35 @@ export class DeviceStore {
     AppStorage.setOrCreate('humidity', 72)
     AppStorage.setOrCreate('onlineDevices', 12)
     AppStorage.setOrCreate('powerUsage', 8.5)
+    
+    // 场景激活状态
+    AppStorage.setOrCreate('activeScene', '')
+
+    // 首页展示的设备ID列表
+    AppStorage.setOrCreate('homeDeviceIds', 'light1,air,door,curtain')
+  }
+
+  // 首页设备管理
+  static getHomeDeviceIds(): string[] {
+    const raw = AppStorage.get<string>('homeDeviceIds') || ''
+    return raw.split(',').filter((id: string) => id.length > 0)
+  }
+
+  static setHomeDeviceIds(ids: string[]): void {
+    AppStorage.set('homeDeviceIds', ids.join(','))
+  }
+
+  static addHomeDevice(deviceId: string): void {
+    const ids = DeviceStore.getHomeDeviceIds()
+    if (!ids.includes(deviceId)) {
+      ids.push(deviceId)
+      DeviceStore.setHomeDeviceIds(ids)
+    }
+  }
+
+  static removeHomeDevice(deviceId: string): void {
+    const ids = DeviceStore.getHomeDeviceIds().filter((id: string) => id !== deviceId)
+    DeviceStore.setHomeDeviceIds(ids)
   }
 
   // 设备控制方法
@@ -71,5 +100,9 @@ export class DeviceStore {
 
   static setHumidity(value: number): void {
     AppStorage.set('humidity', value)
+  }
+  
+  static setActiveScene(sceneId: string): void {
+    AppStorage.set('activeScene', sceneId)
   }
 }

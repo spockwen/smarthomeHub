@@ -1,5 +1,6 @@
 // 商城首页 - 符合 ArkTS 规范
 import prompt from '@ohos.promptAction'
+import router from '@ohos.router'
 import { ProductService, Product } from '../service/ProductService'
 import { CartService } from '../service/CartService'
 
@@ -145,7 +146,7 @@ export struct StorePage {
         .borderRadius(20)
       }
       .onClick(() => {
-        prompt.showToast({ message: '购物车功能开发中' })
+        router.pushUrl({ url: 'pages/CartPage' })
       })
     }
     .width('100%')
@@ -349,9 +350,13 @@ export struct StorePage {
   }
 
   addToCart(product: Product) {
-    this.cartService.addToCart(product)
-    this.updateCartCount()
-    prompt.showToast({ message: '已添加到购物车' })
+    const success = this.cartService.addToCart(product)
+    if (success) {
+      this.updateCartCount()
+      prompt.showToast({ message: '已添加到购物车' })
+    } else {
+      prompt.showToast({ message: '库存不足，无法添加' })
+    }
   }
 
   showProductDetail(product: Product) {
