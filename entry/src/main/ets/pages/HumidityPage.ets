@@ -3,34 +3,27 @@
  * 展示湿度历史趋势、相关设备控制
  */
 import { DeviceStore } from '../DeviceStore'
-import { Colors, FontSize, Spacing, BorderRadius } from '../common/DesignConstants'
+import { Colors, FontSize, Spacing, BorderRadius, ThemeColors } from '../common/DesignConstants'
 import router from '@ohos.router'
 
 @Entry
 @Component
 struct HumidityPage {
   @StorageLink('humidity') humidity: number = 72
+  @StorageProp('isDarkMode') isDark: boolean = false
   
   @State private targetHumidity: number = 60
   @State private humidityHistory: number[] = [65, 68, 70, 72, 75, 73, 70, 68, 65, 63, 60, 62]
   
   build() {
     Column() {
-      // 顶部导航栏
       this.NavigationBar()
       
       Scroll() {
         Column({ space: Spacing.LG }) {
-          // 当前湿度卡片
           this.CurrentHumidityCard()
-          
-          // 湿度趋势图
           this.HumidityTrendCard()
-          
-          // 湿度控制
           this.HumidityControlCard()
-          
-          // 湿度建议
           this.HumidityAdviceCard()
         }
         .width('100%')
@@ -41,15 +34,14 @@ struct HumidityPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Colors.BG_LIGHT)
+    .backgroundColor(ThemeColors.bg(this.isDark))
   }
   
-  // 导航栏
   @Builder NavigationBar() {
     Row() {
       Text('←')
         .fontSize(24)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
         .onClick(() => {
           router.back()
         })
@@ -57,7 +49,7 @@ struct HumidityPage {
       Text('室内湿度')
         .fontSize(FontSize.TITLE2)
         .fontWeight(600)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
         .margin({ left: Spacing.MD })
       
       Blank()
@@ -65,10 +57,9 @@ struct HumidityPage {
     .width('100%')
     .height(56)
     .padding({ left: Spacing.LG, right: Spacing.LG })
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 当前湿度卡片
   @Builder CurrentHumidityCard() {
     Column({ space: Spacing.SM }) {
       Row() {
@@ -83,14 +74,13 @@ struct HumidityPage {
           
           Text('当前室内湿度')
             .fontSize(FontSize.BODY2)
-            .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+            .fontColor(ThemeColors.textSecondary(this.isDark))
         }
         .alignItems(HorizontalAlign.Start)
         .margin({ left: Spacing.LG })
         
         Blank()
         
-        // 湿度状态指示
         Column({ space: 4 }) {
           Text(this.getHumidityStatus())
             .fontSize(FontSize.BODY1)
@@ -99,7 +89,7 @@ struct HumidityPage {
           
           Text(this.getHumidityAdvice())
             .fontSize(FontSize.CAPTION1)
-            .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+            .fontColor(ThemeColors.textSecondary(this.isDark))
         }
         .alignItems(HorizontalAlign.End)
       }
@@ -108,33 +98,31 @@ struct HumidityPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
     .shadow({
       radius: 8,
-      color: '#1A000000',
+      color: ThemeColors.cardShadow(this.isDark),
       offsetX: 0,
       offsetY: 2
     })
   }
   
-  // 湿度趋势图
   @Builder HumidityTrendCard() {
     Column({ space: Spacing.MD }) {
       Row() {
         Text('湿度趋势')
           .fontSize(FontSize.TITLE3)
           .fontWeight(600)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
         
         Blank()
         
         Text('近12小时')
           .fontSize(FontSize.CAPTION1)
-          .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+          .fontColor(ThemeColors.textSecondary(this.isDark))
       }
       .width('100%')
       
-      // 简易柱状图
       Row({ space: 4 }) {
         ForEach(this.humidityHistory, (humidity: number, index: number) => {
           Column() {
@@ -153,7 +141,6 @@ struct HumidityPage {
       .width('100%')
       .height(120)
       
-      // 图例
       Row({ space: Spacing.LG }) {
         this.LegendItem('偏湿', Colors.BRAND_SECONDARY)
         this.LegendItem('舒适', Colors.SUCCESS)
@@ -163,10 +150,9 @@ struct HumidityPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 图例项
   @Builder LegendItem(label: string, color: string) {
     Row({ space: 4 }) {
       Column()
@@ -177,29 +163,27 @@ struct HumidityPage {
       
       Text(label)
         .fontSize(FontSize.CAPTION2)
-        .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+        .fontColor(ThemeColors.textSecondary(this.isDark))
     }
   }
   
-  // 湿度控制
   @Builder HumidityControlCard() {
     Column({ space: Spacing.MD }) {
       Text('目标湿度')
         .fontSize(FontSize.TITLE3)
         .fontWeight(600)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
       
       Row() {
-        // 减少按钮
         Column() {
           Text('-')
             .fontSize(28)
-            .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+            .fontColor(ThemeColors.textPrimary(this.isDark))
         }
         .width(48)
         .height(48)
         .borderRadius(24)
-        .backgroundColor(Colors.BG_LIGHT)
+        .backgroundColor(ThemeColors.bg(this.isDark))
         .justifyContent(FlexAlign.Center)
         .onClick(() => {
           if (this.targetHumidity > 30) {
@@ -207,23 +191,21 @@ struct HumidityPage {
           }
         })
         
-        // 目标湿度显示
         Text(`${this.targetHumidity}%`)
           .fontSize(36)
           .fontWeight(700)
           .fontColor(Colors.BRAND_SECONDARY)
           .margin({ left: Spacing.XL, right: Spacing.XL })
         
-        // 增加按钮
         Column() {
           Text('+')
             .fontSize(28)
-            .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+            .fontColor(ThemeColors.textPrimary(this.isDark))
         }
         .width(48)
         .height(48)
         .borderRadius(24)
-        .backgroundColor(Colors.BG_LIGHT)
+        .backgroundColor(ThemeColors.bg(this.isDark))
         .justifyContent(FlexAlign.Center)
         .onClick(() => {
           if (this.targetHumidity < 80) {
@@ -234,7 +216,6 @@ struct HumidityPage {
       .width('100%')
       .justifyContent(FlexAlign.Center)
       
-      // 快捷设置
       Row({ space: Spacing.SM }) {
         this.QuickHumidityButton('干燥', 40, '🏜️')
         this.QuickHumidityButton('舒适', 60, '😊')
@@ -245,10 +226,9 @@ struct HumidityPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 快捷湿度按钮
   @Builder QuickHumidityButton(label: string, humidity: number, icon: string) {
     Column({ space: 4 }) {
       Text(icon)
@@ -257,28 +237,27 @@ struct HumidityPage {
       Text(`${humidity}%`)
         .fontSize(FontSize.BODY1)
         .fontWeight(600)
-        .fontColor(this.targetHumidity === humidity ? Colors.BRAND_SECONDARY : Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(this.targetHumidity === humidity ? Colors.BRAND_SECONDARY : ThemeColors.textPrimary(this.isDark))
       
       Text(label)
         .fontSize(FontSize.CAPTION2)
-        .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+        .fontColor(ThemeColors.textSecondary(this.isDark))
     }
     .layoutWeight(1)
     .padding(Spacing.SM)
     .borderRadius(BorderRadius.MEDIUM)
-    .backgroundColor(this.targetHumidity === humidity ? '#E1F5FE' : Colors.BG_LIGHT)
+    .backgroundColor(this.targetHumidity === humidity ? ThemeColors.selectedBg(this.isDark) : ThemeColors.bg(this.isDark))
     .onClick(() => {
       this.targetHumidity = humidity
     })
   }
   
-  // 湿度建议卡片
   @Builder HumidityAdviceCard() {
     Column({ space: Spacing.MD }) {
       Text('湿度小贴士')
         .fontSize(FontSize.TITLE3)
         .fontWeight(600)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
       
       Column({ space: Spacing.SM }) {
         this.AdviceItem('🏠', '室内最佳湿度范围：40%-70%')
@@ -291,10 +270,9 @@ struct HumidityPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 建议项
   @Builder AdviceItem(icon: string, text: string) {
     Row({ space: Spacing.SM }) {
       Text(icon)
@@ -302,34 +280,30 @@ struct HumidityPage {
       
       Text(text)
         .fontSize(FontSize.BODY2)
-        .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+        .fontColor(ThemeColors.textSecondary(this.isDark))
         .layoutWeight(1)
     }
     .width('100%')
   }
   
-  // 获取湿度状态
   private getHumidityStatus(): string {
     if (this.humidity >= 70) return '偏湿'
     if (this.humidity <= 40) return '偏干'
     return '舒适'
   }
   
-  // 获取湿度状态颜色
   private getHumidityStatusColor(): string {
     if (this.humidity >= 70) return Colors.BRAND_SECONDARY
     if (this.humidity <= 40) return Colors.WARNING
     return Colors.SUCCESS
   }
   
-  // 获取湿度建议
   private getHumidityAdvice(): string {
     if (this.humidity >= 70) return '建议通风除湿'
     if (this.humidity <= 40) return '建议使用加湿器'
     return '湿度适宜'
   }
   
-  // 获取柱状图高度
   private getBarHeight(humidity: number): number {
     const minHumidity = 20
     const maxHumidity = 90

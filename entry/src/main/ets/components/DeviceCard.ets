@@ -2,7 +2,7 @@
  * 设备卡片组件
  * 实现沉浸光感设备状态展示 + 毛玻璃基底 + 动态光效
  */
-import { Colors, GlowConfig, BorderRadius, FontSize, Spacing, ComponentSize } from '../common/DesignConstants'
+import { Colors, GlowConfig, BorderRadius, FontSize, Spacing, ComponentSize, ThemeColors } from '../common/DesignConstants'
 import { HaloToggle } from './HaloToggle'
 
 // 设备状态类型
@@ -39,6 +39,7 @@ export struct DeviceCard {
   @State private deviceState: boolean = false  // 设备开关状态
   @State private touchX: number = 0
   @State private touchY: number = 0
+  @StorageProp('isDarkMode') isDark: boolean = false
   
   // 监听设备数据变化
   @Watch('onDeviceChange') @Prop device: DeviceModel = {
@@ -74,12 +75,12 @@ export struct DeviceCard {
   // 计算卡片背景色
   private getCardColor(): string {
     if (this.device.status === 'offline') {
-      return 'rgba(240, 240, 240, 0.8)'
+      return ThemeColors.cardBgOffline(this.isDark)
     }
     if (this.deviceState) {
-      return 'rgba(255, 255, 255, 0.7)'  // 毛玻璃基底
+      return ThemeColors.cardBg(this.isDark)  // 毛玻璃基底
     }
-    return 'rgba(250, 250, 250, 0.6)'
+    return ThemeColors.cardBgOff(this.isDark)
   }
   
   // 计算光晕参数
@@ -123,7 +124,7 @@ export struct DeviceCard {
   // 获取状态颜色
   private getStatusColor(): string {
     if (this.device.status === 'offline') {
-      return Colors.TEXT_TERTIARY_LIGHT
+      return ThemeColors.textTertiary(this.isDark)
     }
     if (this.device.status === 'warning') {
       return Colors.WARNING
@@ -131,7 +132,7 @@ export struct DeviceCard {
     if (this.deviceState) {
       return Colors.SUCCESS
     }
-    return Colors.TEXT_SECONDARY_LIGHT
+    return ThemeColors.textSecondary(this.isDark)
   }
   
   // 计算光晕偏移（跟随触摸点）
@@ -196,7 +197,7 @@ export struct DeviceCard {
           Text(this.device.name)
             .fontSize(this.compact ? FontSize.BODY2 : FontSize.BODY1)
             .fontWeight(500)
-            .fontColor(this.device.status === 'offline' ? Colors.TEXT_TERTIARY_LIGHT : Colors.TEXT_PRIMARY_LIGHT)
+            .fontColor(this.device.status === 'offline' ? ThemeColors.textTertiary(this.isDark) : ThemeColors.textPrimary(this.isDark))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           
@@ -205,11 +206,11 @@ export struct DeviceCard {
             Row({ space: 8 }) {
               Text(this.device.room)
                 .fontSize(FontSize.CAPTION1)
-                .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+                .fontColor(ThemeColors.textSecondary(this.isDark))
               
               Text('·')
                 .fontSize(FontSize.CAPTION1)
-                .fontColor(Colors.TEXT_TERTIARY_LIGHT)
+                .fontColor(ThemeColors.textTertiary(this.isDark))
               
               Text(this.getStatusText())
                 .fontSize(FontSize.CAPTION1)
@@ -231,11 +232,11 @@ export struct DeviceCard {
       // 毛玻璃效果
       .backgroundBlurStyle(BlurStyle.Thin, { colorMode: ThemeColorMode.LIGHT, scale: 0.6 })
       .borderWidth(1)
-      .borderColor('rgba(255, 255, 255, 0.3)')
+      .borderColor(this.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.3)')
       // 阴影效果（深度视觉）
       .shadow({
         radius: this.deviceState ? 16 : 8,
-        color: this.deviceState ? Colors.GLOW_BLUE : '#1A000000',
+        color: this.deviceState ? ThemeColors.glowBlue(this.isDark) : ThemeColors.cardShadow(this.isDark),
         offsetX: 0,
         offsetY: this.isPressed ? 2 : 6
       })

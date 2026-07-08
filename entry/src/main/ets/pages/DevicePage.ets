@@ -3,7 +3,7 @@
  * 基于 HarmonyOS Design 规范实现
  */
 import { DeviceStore } from '../DeviceStore'
-import { Colors, FontSize, Spacing, BorderRadius } from '../common/DesignConstants'
+import { Colors, FontSize, Spacing, BorderRadius, ThemeColors } from '../common/DesignConstants'
 import { DeviceCard, DeviceModel } from '../components/DeviceCard'
 import router from '@ohos.router'
 
@@ -30,6 +30,13 @@ export struct DevicePage {
   @StorageLink('cameraOn') cameraOn: boolean = true
   @StorageLink('socketOn') socketOn: boolean = true
   @StorageLink('tvOn') tvOn: boolean = false
+  @StorageLink('airPurifierOn') airPurifierOn: boolean = false
+  @StorageLink('robotVacuumOn') robotVacuumOn: boolean = false
+  @StorageLink('waterHeaterOn') waterHeaterOn: boolean = false
+  @StorageLink('doorSensorOn') doorSensorOn: boolean = true
+  @StorageLink('bedsideLampOn') bedsideLampOn: boolean = false
+  
+  @StorageProp('isDarkMode') isDark: boolean = false
   
   // 当前分类
   @State private currentCategory: DeviceCategory = 'all'
@@ -55,7 +62,12 @@ export struct DevicePage {
       { id: 'camera', name: '摄像头', icon: '📹', room: '客厅', status: 'online', isOn: this.cameraOn, value: '监控中' } as DeviceModel,
       { id: 'curtain', name: '智能窗帘', icon: '🪟', room: '客厅', status: 'online', isOn: this.curtainOpen, value: '已关闭' } as DeviceModel,
       { id: 'socket', name: '智能插座', icon: '🔌', room: '卧室', status: 'online', isOn: this.socketOn, value: '供电中' } as DeviceModel,
-      { id: 'tv', name: '智能电视', icon: '📺', room: '客厅', status: 'online', isOn: this.tvOn, value: '待机' } as DeviceModel
+      { id: 'tv', name: '智能电视', icon: '📺', room: '客厅', status: 'online', isOn: this.tvOn, value: '待机' } as DeviceModel,
+      { id: 'airPurifier', name: '空气净化器', icon: '💨', room: '卧室', status: 'online', isOn: this.airPurifierOn, value: '净化中' } as DeviceModel,
+      { id: 'robotVacuum', name: '扫地机器人', icon: '🤖', room: '客厅', status: 'online', isOn: this.robotVacuumOn, value: '清扫中' } as DeviceModel,
+      { id: 'waterHeater', name: '热水器', icon: '♨️', room: '卫生间', status: 'online', isOn: this.waterHeaterOn, value: '加热中' } as DeviceModel,
+      { id: 'doorSensor', name: '门磁传感器', icon: '📡', room: '入户', status: 'online', isOn: this.doorSensorOn, value: '监控中' } as DeviceModel,
+      { id: 'bedsideLamp', name: '床头灯', icon: '💡', room: '卧室', status: 'online', isOn: this.bedsideLampOn, value: '已关闭' } as DeviceModel
     ]
   }
   
@@ -71,8 +83,8 @@ export struct DevicePage {
     const categoryMap: Record<string, string[]> = {
       'light': ['💡'],
       'climate': ['❄️', '🔥'],
-      'security': ['🚪', '📹', '🔒'],
-      'appliance': ['🪟', '🔌', '📺', '🎵']
+      'security': ['🚪', '📹', '🔒', '📡'],
+      'appliance': ['🪟', '🔌', '📺', '🎵', '💨', '🤖', '♨️']
     }
     
     const icons = categoryMap[this.currentCategory] || []
@@ -119,6 +131,16 @@ export struct DevicePage {
                   DeviceStore.setSocketOn(isOn)
                 } else if (device.id === 'tv') {
                   DeviceStore.setTvOn(isOn)
+                } else if (device.id === 'airPurifier') {
+                  DeviceStore.setAirPurifierOn(isOn)
+                } else if (device.id === 'robotVacuum') {
+                  DeviceStore.setRobotVacuumOn(isOn)
+                } else if (device.id === 'waterHeater') {
+                  DeviceStore.setWaterHeaterOn(isOn)
+                } else if (device.id === 'doorSensor') {
+                  DeviceStore.setDoorSensorOn(isOn)
+                } else if (device.id === 'bedsideLamp') {
+                  DeviceStore.setBedsideLampOn(isOn)
                 }
               }
             })
@@ -132,7 +154,7 @@ export struct DevicePage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Colors.BG_LIGHT)
+    .backgroundColor(ThemeColors.bg(this.isDark))
   }
   
   // 标题栏
@@ -141,7 +163,7 @@ export struct DevicePage {
       Text('设备管理')
         .fontSize(FontSize.TITLE1)
         .fontWeight(700)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
       
       Blank()
       
@@ -165,7 +187,7 @@ export struct DevicePage {
     .width('100%')
     .height(56)
     .padding({ left: Spacing.LG, right: Spacing.LG })
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
   // 分类筛选
@@ -179,12 +201,12 @@ export struct DevicePage {
             
             Text(category.name)
               .fontSize(FontSize.CAPTION1)
-              .fontColor(this.currentCategory === category.id ? Colors.BRAND_PRIMARY : Colors.TEXT_SECONDARY_LIGHT)
+              .fontColor(this.currentCategory === category.id ? Colors.BRAND_PRIMARY : ThemeColors.textSecondary(this.isDark))
           }
           .width(60)
           .padding({ top: 8, bottom: 8 })
           .borderRadius(BorderRadius.MEDIUM)
-          .backgroundColor(this.currentCategory === category.id ? Colors.BRAND_PRIMARY + '15' : '#F5F5F5')
+          .backgroundColor(this.currentCategory === category.id ? ThemeColors.selectedBg(this.isDark) : ThemeColors.itemBg(this.isDark))
           .onClick(() => {
             this.currentCategory = category.id as DeviceCategory
           })
@@ -196,6 +218,6 @@ export struct DevicePage {
     .height(70)
     .scrollable(ScrollDirection.Horizontal)
     .scrollBar(BarState.Off)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
 }

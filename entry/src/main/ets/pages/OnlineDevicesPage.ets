@@ -3,7 +3,7 @@
  * 展示所有设备在线状态、设备分类、快速操作
  */
 import { DeviceStore } from '../DeviceStore'
-import { Colors, FontSize, Spacing, BorderRadius } from '../common/DesignConstants'
+import { Colors, FontSize, Spacing, BorderRadius, ThemeColors } from '../common/DesignConstants'
 import router from '@ohos.router'
 
 @Entry
@@ -20,6 +20,7 @@ struct OnlineDevicesPage {
   @StorageLink('cameraOn') cameraOn: boolean = true
   @StorageLink('socketOn') socketOn: boolean = true
   @StorageLink('tvOn') tvOn: boolean = false
+  @StorageProp('isDarkMode') isDark: boolean = false
   
   @State private devices: DeviceInfo[] = []
   
@@ -29,18 +30,12 @@ struct OnlineDevicesPage {
   
   build() {
     Column() {
-      // 顶部导航栏
       this.NavigationBar()
       
       Scroll() {
         Column({ space: Spacing.LG }) {
-          // 在线设备统计卡片
           this.OnlineStatsCard()
-          
-          // 设备分类统计
           this.CategoryStatsCard()
-          
-          // 设备列表
           this.DeviceListCard()
         }
         .width('100%')
@@ -51,15 +46,14 @@ struct OnlineDevicesPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Colors.BG_LIGHT)
+    .backgroundColor(ThemeColors.bg(this.isDark))
   }
   
-  // 导航栏
   @Builder NavigationBar() {
     Row() {
       Text('←')
         .fontSize(24)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
         .onClick(() => {
           router.back()
         })
@@ -67,7 +61,7 @@ struct OnlineDevicesPage {
       Text('在线设备')
         .fontSize(FontSize.TITLE2)
         .fontWeight(600)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
         .margin({ left: Spacing.MD })
       
       Blank()
@@ -75,10 +69,9 @@ struct OnlineDevicesPage {
     .width('100%')
     .height(56)
     .padding({ left: Spacing.LG, right: Spacing.LG })
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 在线设备统计卡片
   @Builder OnlineStatsCard() {
     Column({ space: Spacing.SM }) {
       Row() {
@@ -93,14 +86,13 @@ struct OnlineDevicesPage {
           
           Text('在线设备')
             .fontSize(FontSize.BODY2)
-            .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+            .fontColor(ThemeColors.textSecondary(this.isDark))
         }
         .alignItems(HorizontalAlign.Start)
         .margin({ left: Spacing.LG })
         
         Blank()
         
-        // 设备状态指示
         Column({ space: 4 }) {
           Text(this.getOnlineStatus())
             .fontSize(FontSize.BODY1)
@@ -109,7 +101,7 @@ struct OnlineDevicesPage {
           
           Text(`${this.devices.length - this.onlineDevices} 台离线`)
             .fontSize(FontSize.CAPTION1)
-            .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+            .fontColor(ThemeColors.textSecondary(this.isDark))
         }
         .alignItems(HorizontalAlign.End)
       }
@@ -118,22 +110,21 @@ struct OnlineDevicesPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
     .shadow({
       radius: 8,
-      color: '#1A000000',
+      color: ThemeColors.cardShadow(this.isDark),
       offsetX: 0,
       offsetY: 2
     })
   }
   
-  // 设备分类统计
   @Builder CategoryStatsCard() {
     Column({ space: Spacing.MD }) {
       Text('设备分类')
         .fontSize(FontSize.TITLE3)
         .fontWeight(600)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
       
       Row({ space: Spacing.SM }) {
         this.CategoryItem('💡', '照明', this.getLightCount(), 3)
@@ -146,10 +137,9 @@ struct OnlineDevicesPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 分类项
   @Builder CategoryItem(icon: string, name: string, online: number, total: number) {
     Column({ space: 4 }) {
       Text(icon)
@@ -157,7 +147,7 @@ struct OnlineDevicesPage {
       
       Text(name)
         .fontSize(FontSize.CAPTION1)
-        .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+        .fontColor(ThemeColors.textSecondary(this.isDark))
       
       Text(`${online}/${total}`)
         .fontSize(FontSize.BODY2)
@@ -167,17 +157,16 @@ struct OnlineDevicesPage {
     .layoutWeight(1)
     .padding(Spacing.SM)
     .borderRadius(BorderRadius.MEDIUM)
-    .backgroundColor(Colors.BG_LIGHT)
+    .backgroundColor(ThemeColors.bg(this.isDark))
   }
   
-  // 设备列表
   @Builder DeviceListCard() {
     Column({ space: Spacing.MD }) {
       Row() {
         Text('设备列表')
           .fontSize(FontSize.TITLE3)
           .fontWeight(600)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
         
         Blank()
         
@@ -197,10 +186,9 @@ struct OnlineDevicesPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 设备项
   @Builder DeviceItem(device: DeviceInfo) {
     Row() {
       Text(device.icon)
@@ -209,35 +197,33 @@ struct OnlineDevicesPage {
       Column({ space: 2 }) {
         Text(device.name)
           .fontSize(FontSize.BODY1)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
         
         Text(device.room)
           .fontSize(FontSize.CAPTION2)
-          .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+          .fontColor(ThemeColors.textSecondary(this.isDark))
       }
       .alignItems(HorizontalAlign.Start)
       .margin({ left: Spacing.SM })
       
       Blank()
       
-      // 在线状态指示
       Row({ space: 4 }) {
         Column()
           .width(8)
           .height(8)
           .borderRadius(4)
-          .backgroundColor(device.isOnline ? Colors.SUCCESS : Colors.TEXT_SECONDARY_LIGHT)
+          .backgroundColor(device.isOnline ? Colors.SUCCESS : ThemeColors.textSecondary(this.isDark))
         
         Text(device.isOnline ? '在线' : '离线')
           .fontSize(FontSize.CAPTION2)
-          .fontColor(device.isOnline ? Colors.SUCCESS : Colors.TEXT_SECONDARY_LIGHT)
+          .fontColor(device.isOnline ? Colors.SUCCESS : ThemeColors.textSecondary(this.isDark))
       }
     }
     .width('100%')
     .padding({ top: Spacing.SM, bottom: Spacing.SM })
   }
   
-  // 加载设备数据
   private loadDevices() {
     this.devices = [
       { id: 'light', name: '客厅灯', icon: '💡', room: '客厅', isOnline: true },
@@ -253,7 +239,6 @@ struct OnlineDevicesPage {
     ]
   }
   
-  // 获取在线状态
   private getOnlineStatus(): string {
     const total = this.devices.length
     const ratio = this.onlineDevices / total
@@ -262,7 +247,6 @@ struct OnlineDevicesPage {
     return '多数离线'
   }
   
-  // 获取照明设备在线数
   private getLightCount(): number {
     let count = 0
     if (this.lightOn) count++
@@ -271,7 +255,6 @@ struct OnlineDevicesPage {
     return count
   }
   
-  // 获取温控设备在线数
   private getTempControlCount(): number {
     let count = 0
     if (this.airOn) count++
@@ -279,7 +262,6 @@ struct OnlineDevicesPage {
     return count
   }
   
-  // 获取安防设备在线数
   private getSecurityCount(): number {
     let count = 0
     if (this.doorLocked) count++
@@ -287,7 +269,6 @@ struct OnlineDevicesPage {
     return count
   }
   
-  // 获取娱乐设备在线数
   private getEntertainmentCount(): number {
     let count = 0
     if (this.tvOn) count++
@@ -296,7 +277,6 @@ struct OnlineDevicesPage {
   }
 }
 
-// 设备信息接口
 interface DeviceInfo {
   id: string
   name: string

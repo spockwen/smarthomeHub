@@ -3,22 +3,16 @@ import prompt from '@ohos.promptAction'
 import router from '@ohos.router'
 import { ProductService, Product } from '../service/ProductService'
 import { CartService } from '../service/CartService'
+import { ThemeColors } from '../common/DesignConstants'
 
-// 主题色常量接口
 interface ColorConfig {
   BRAND: string
   SUCCESS: string
   WARNING: string
   ERROR: string
-  TEXT_PRIMARY: string
-  TEXT_SECONDARY: string
-  TEXT_TERTIARY: string
   BORDER: string
-  BACKGROUND: string
-  WHITE: string
 }
 
-// 间距常量接口
 interface SpacingConfig {
   XS: number
   SM: number
@@ -32,12 +26,7 @@ const Colors: ColorConfig = {
   SUCCESS: '#00C853',
   WARNING: '#FF9800',
   ERROR: '#F44336',
-  TEXT_PRIMARY: '#333333',
-  TEXT_SECONDARY: '#666666',
-  TEXT_TERTIARY: '#999999',
-  BORDER: '#E5E5E5',
-  BACKGROUND: '#F5F5F5',
-  WHITE: '#FFFFFF'
+  BORDER: '#E5E5E5'
 }
 
 const Spacing: SpacingConfig = {
@@ -51,6 +40,7 @@ const Spacing: SpacingConfig = {
 @Entry
 @Component
 export struct StorePage {
+  @StorageProp('isDarkMode') isDark: boolean = false
   @State searchText: string = ''
   @State selectedCategory: string = '全部'
   @State products: Product[] = []
@@ -101,27 +91,21 @@ export struct StorePage {
 
   build() {
     Column() {
-      // 顶部搜索栏
       this.SearchBar()
-
-      // 分类导航
       this.CategoryNav()
-
-      // 商品列表
       this.ProductGrid()
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Colors.BACKGROUND)
+    .backgroundColor(ThemeColors.bg(this.isDark))
   }
 
   @Builder
   SearchBar() {
     Row({ space: Spacing.MD }) {
-      // 搜索框
       Search({ placeholder: '搜索智能设备', value: this.searchText })
-        .placeholderColor(Colors.TEXT_TERTIARY)
-        .backgroundColor(Colors.WHITE)
+        .placeholderColor(ThemeColors.textTertiary(this.isDark))
+        .backgroundColor(ThemeColors.surface(this.isDark))
         .borderRadius(20)
         .height(40)
         .layoutWeight(1)
@@ -134,7 +118,6 @@ export struct StorePage {
           }
         })
 
-      // 购物车按钮
       Badge({ count: this.cartCount, style: { fontSize: 10 } }) {
         Stack() {
           Text('🛒')
@@ -142,7 +125,7 @@ export struct StorePage {
         }
         .width(40)
         .height(40)
-        .backgroundColor(Colors.WHITE)
+        .backgroundColor(ThemeColors.surface(this.isDark))
         .borderRadius(20)
       }
       .onClick(() => {
@@ -151,7 +134,7 @@ export struct StorePage {
     }
     .width('100%')
     .padding({ left: Spacing.LG, right: Spacing.LG, top: Spacing.LG, bottom: Spacing.MD })
-    .backgroundColor(Colors.WHITE)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
 
   @Builder
@@ -161,9 +144,9 @@ export struct StorePage {
         ForEach(this.categories, (category: string) => {
           Text(category)
             .fontSize(14)
-            .fontColor(this.selectedCategory === category ? Colors.WHITE : Colors.TEXT_PRIMARY)
+            .fontColor(this.selectedCategory === category ? '#FFFFFF' : ThemeColors.textPrimary(this.isDark))
             .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-            .backgroundColor(this.selectedCategory === category ? Colors.BRAND : Colors.WHITE)
+            .backgroundColor(this.selectedCategory === category ? Colors.BRAND : ThemeColors.surface(this.isDark))
             .borderRadius(20)
             .onClick(() => {
               this.selectedCategory = category
@@ -177,14 +160,13 @@ export struct StorePage {
     .scrollBar(BarState.Off)
     .width('100%')
     .padding({ top: Spacing.MD, bottom: Spacing.MD })
-    .backgroundColor(Colors.WHITE)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
 
   @Builder
   ProductGrid() {
     Scroll() {
       Column({ space: Spacing.MD }) {
-        // 热门推荐标题
         if (this.selectedCategory === '全部') {
           Row() {
             Text('🔥')
@@ -192,21 +174,19 @@ export struct StorePage {
             Text('热门推荐')
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
-              .fontColor(Colors.TEXT_PRIMARY)
+              .fontColor(ThemeColors.textPrimary(this.isDark))
               .margin({ left: Spacing.SM })
           }
           .width('100%')
           .padding({ left: Spacing.LG, right: Spacing.LG })
 
-          // 热门商品横向滚动
           this.HotProductsScroll()
         }
 
-        // 商品网格
         Text('全部商品')
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
-          .fontColor(Colors.TEXT_PRIMARY)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
           .alignSelf(ItemAlign.Start)
           .padding({ left: Spacing.LG })
 
@@ -235,20 +215,17 @@ export struct StorePage {
       Row({ space: Spacing.MD }) {
         ForEach(this.productService.getHotProducts(), (product: Product) => {
           Column() {
-            // 商品图标
             Text(this.getProductIcon(product.image))
               .fontSize(40)
               .padding(16)
 
-            // 商品名称
             Text(product.name)
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor(Colors.TEXT_PRIMARY)
+              .fontColor(ThemeColors.textPrimary(this.isDark))
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-            // 价格
             Text('¥' + product.price)
               .fontSize(16)
               .fontWeight(FontWeight.Bold)
@@ -256,7 +233,7 @@ export struct StorePage {
           }
           .width(120)
           .padding(Spacing.MD)
-          .backgroundColor(Colors.WHITE)
+          .backgroundColor(ThemeColors.surface(this.isDark))
           .borderRadius(12)
           .onClick(() => {
             this.showProductDetail(product)
@@ -273,29 +250,25 @@ export struct StorePage {
   @Builder
   ProductCard(product: Product) {
     Column() {
-      // 商品图标
       Text(this.getProductIcon(product.image))
         .fontSize(36)
         .padding(Spacing.LG)
 
-      // 商品名称
       Text(product.name)
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
-        .fontColor(Colors.TEXT_PRIMARY)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .width('100%')
 
-      // 描述
       Text(product.description)
         .fontSize(12)
-        .fontColor(Colors.TEXT_TERTIARY)
+        .fontColor(ThemeColors.textTertiary(this.isDark))
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .margin({ top: 2 })
 
-      // 价格和按钮
       Row() {
         Column() {
           Text('¥' + product.price)
@@ -306,7 +279,7 @@ export struct StorePage {
           if (product.originalPrice > product.price) {
             Text('¥' + product.originalPrice)
               .fontSize(10)
-              .fontColor(Colors.TEXT_TERTIARY)
+              .fontColor(ThemeColors.textTertiary(this.isDark))
               .decoration({ type: TextDecorationType.LineThrough })
           }
         }
@@ -326,7 +299,7 @@ export struct StorePage {
     }
     .width('100%')
     .padding(Spacing.MD)
-    .backgroundColor(Colors.WHITE)
+    .backgroundColor(ThemeColors.surface(this.isDark))
     .borderRadius(12)
     .onClick(() => {
       this.showProductDetail(product)

@@ -4,83 +4,76 @@
  * 中间分「启动条件」和「执行结果」两个模块，每个模块下是白色圆角卡片列表
  * 底部无导航栏，仅保留返回逻辑
  */
-import { Colors, FontSize, Spacing, BorderRadius } from '../common/DesignConstants'
+import { Colors, FontSize, Spacing, BorderRadius, ThemeColors } from '../common/DesignConstants'
 import router from '@ohos.router'
 import { SceneStore, SceneModel } from '../SceneStore'
+import { DeviceStore } from '../DeviceStore'
 
-// 场景条件/结果项类型
 export interface SceneActionItem {
   id: string
   icon: string
   title: string
   description: string
-  hasPurchaseButton: boolean  // 是否有购买按钮
+  deviceId: string
+  action: string
 }
 
-// 场景详情数据类型
 export interface SceneDetailData {
   id: string
   title: string
   description: string
-  gradientColors: string[]  // [start, end]
-  triggerConditions: SceneActionItem[]  // 启动条件
-  executionResults: SceneActionItem[]    // 执行结果
+  gradientColors: string[]
+  triggerConditions: SceneActionItem[]
+  executionResults: SceneActionItem[]
+  sceneId: string
 }
 
 @Entry
 @Component
 export struct SceneDetailPage {
-  // 路由参数
+  @StorageProp('isDarkMode') isDark: boolean = false
+  @StorageLink('activeScene') activeScene: string = ''
+  @StorageLink('lightOn') lightOn: boolean = true
+  @StorageLink('bedroomLightOn') bedroomLightOn: boolean = false
+  @StorageLink('kitchenLightOn') kitchenLightOn: boolean = true
+  @StorageLink('airOn') airOn: boolean = false
+  @StorageLink('heaterOn') heaterOn: boolean = false
+  @StorageLink('doorLocked') doorLocked: boolean = true
+  @StorageLink('curtainOpen') curtainOpen: boolean = false
+  @StorageLink('cameraOn') cameraOn: boolean = true
+  @StorageLink('socketOn') socketOn: boolean = true
+  @StorageLink('tvOn') tvOn: boolean = false
+  @StorageLink('airPurifierOn') airPurifierOn: boolean = false
+  @StorageLink('robotVacuumOn') robotVacuumOn: boolean = false
+  @StorageLink('waterHeaterOn') waterHeaterOn: boolean = false
+  @StorageLink('doorSensorOn') doorSensorOn: boolean = true
+  @StorageLink('bedsideLampOn') bedsideLampOn: boolean = false
   @State private sceneId: string = ''
   @State private sceneData: SceneDetailData | null = null
   @State private isUserScene: boolean = false
   @State private userSceneData: SceneModel | null = null
 
-  // 场景数据配置
   private readonly sceneDetails: Record<string, SceneDetailData> = {
     'leave_home': {
       id: 'leave_home',
       title: '安心离家',
       description: '离开家后，自动关闭空调、灯、开关，开启空气净化器等',
       gradientColors: ['#F5E6D3', '#D4B483'],
+      sceneId: 'leave_home',
       triggerConditions: [
-        {
-          id: 'location',
-          icon: '📍',
-          title: '离开某地',
-          description: '',
-          hasPurchaseButton: false
-        }
+        { id: 'location', icon: '📍', title: '离开某地', description: '离开指定地理位置时触发', deviceId: '', action: '' }
       ],
       executionResults: [
-        {
-          id: 'switch',
-          icon: '🔌',
-          title: '开关',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'light',
-          icon: '💡',
-          title: '灯',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'ac',
-          icon: '❄️',
-          title: '空调',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'air_purifier',
-          icon: '💨',
-          title: '空气净化器',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        }
+        { id: 'switch', icon: '🔌', title: '开关', description: '关闭智能插座', deviceId: 'socket', action: 'off' },
+        { id: 'light', icon: '💡', title: '客厅灯', description: '关闭客厅灯', deviceId: 'light1', action: 'off' },
+        { id: 'light2', icon: '💡', title: '卧室灯', description: '关闭卧室灯', deviceId: 'light2', action: 'off' },
+        { id: 'light3', icon: '💡', title: '厨房灯', description: '关闭厨房灯', deviceId: 'light3', action: 'off' },
+        { id: 'ac', icon: '❄️', title: '空调', description: '关闭空调', deviceId: 'air', action: 'off' },
+        { id: 'air_purifier', icon: '💨', title: '空气净化器', description: '开启空气净化器', deviceId: 'airPurifier', action: 'on' },
+        { id: 'bedside_lamp', icon: '💡', title: '床头灯', description: '关闭床头灯', deviceId: 'bedsideLamp', action: 'off' },
+        { id: 'tv', icon: '📺', title: '电视', description: '关闭电视', deviceId: 'tv', action: 'off' },
+        { id: 'door', icon: '🚪', title: '门锁', description: '锁门', deviceId: 'door', action: 'lock' },
+        { id: 'camera', icon: '📹', title: '摄像头', description: '开启监控', deviceId: 'camera', action: 'on' }
       ]
     },
     'alert': {
@@ -88,23 +81,13 @@ export struct SceneDetailPage {
       title: '异常警报',
       description: '当传感器设备检测到异常时会向您推送通知',
       gradientColors: ['#FFD8CC', '#FF9A7A'],
+      sceneId: 'alert',
       triggerConditions: [
-        {
-          id: 'door_sensor',
-          icon: '🚪',
-          title: '门磁传感器',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        }
+        { id: 'door_sensor', icon: '📡', title: '门磁传感器', description: '感应门窗开关状态', deviceId: 'doorSensor', action: 'monitor' }
       ],
       executionResults: [
-        {
-          id: 'notification',
-          icon: '🔔',
-          title: '推送通知',
-          description: '将给您发送您输入的自定义内容',
-          hasPurchaseButton: false
-        }
+        { id: 'notification', icon: '🔔', title: '推送通知', description: '将给您发送异常告警通知', deviceId: '', action: '' },
+        { id: 'camera', icon: '📹', title: '摄像头', description: '开启摄像头录像', deviceId: 'camera', action: 'on' }
       ]
     },
     'morning': {
@@ -112,37 +95,16 @@ export struct SceneDetailPage {
       title: '早起习惯',
       description: '早晨自动开启灯、空气净化器，关闭空调等，减少起床阻力',
       gradientColors: ['#FFF9E6', '#FFE699'],
+      sceneId: 'morning',
       triggerConditions: [
-        {
-          id: 'timer',
-          icon: '⏰',
-          title: '定时',
-          description: '',
-          hasPurchaseButton: false
-        }
+        { id: 'timer', icon: '⏰', title: '定时', description: '按设定时间自动触发', deviceId: '', action: '' }
       ],
       executionResults: [
-        {
-          id: 'light',
-          icon: '💡',
-          title: '灯',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'ac',
-          icon: '❄️',
-          title: '空调',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'air_purifier',
-          icon: '💨',
-          title: '空气净化器',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        }
+        { id: 'light', icon: '💡', title: '客厅灯', description: '打开客厅灯', deviceId: 'light1', action: 'on' },
+        { id: 'light2', icon: '💡', title: '卧室灯', description: '打开卧室灯', deviceId: 'light2', action: 'on' },
+        { id: 'ac', icon: '❄️', title: '空调', description: '关闭空调', deviceId: 'air', action: 'off' },
+        { id: 'air_purifier', icon: '💨', title: '空气净化器', description: '开启空气净化器', deviceId: 'airPurifier', action: 'on' },
+        { id: 'curtain', icon: '🪟', title: '窗帘', description: '打开窗帘', deviceId: 'curtain', action: 'on' }
       ]
     },
     'sleep': {
@@ -150,58 +112,18 @@ export struct SceneDetailPage {
       title: '就寝提醒',
       description: '为你提供适合睡眠的环境，自动开启空调、空气净化器，关闭灯、插座、开关等',
       gradientColors: ['#E8D9C5', '#B89B7D'],
+      sceneId: 'sleep_scene',
       triggerConditions: [
-        {
-          id: 'timer',
-          icon: '⏰',
-          title: '定时',
-          description: '',
-          hasPurchaseButton: false
-        }
+        { id: 'timer', icon: '⏰', title: '定时', description: '按设定时间自动触发', deviceId: '', action: '' }
       ],
       executionResults: [
-        {
-          id: 'light',
-          icon: '💡',
-          title: '灯',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'socket',
-          icon: '🔌',
-          title: '插座',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'switch',
-          icon: '🔌',
-          title: '开关',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'air_purifier',
-          icon: '💨',
-          title: '空气净化器',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'ac',
-          icon: '❄️',
-          title: '空调',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'bedside_lamp',
-          icon: '💡',
-          title: '台灯',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        }
+        { id: 'light', icon: '💡', title: '客厅灯', description: '关闭客厅灯', deviceId: 'light1', action: 'off' },
+        { id: 'light2', icon: '💡', title: '卧室灯', description: '关闭卧室灯', deviceId: 'light2', action: 'off' },
+        { id: 'bedside_lamp', icon: '💡', title: '床头灯', description: '关闭床头灯', deviceId: 'bedsideLamp', action: 'off' },
+        { id: 'socket', icon: '🔌', title: '插座', description: '关闭智能插座', deviceId: 'socket', action: 'off' },
+        { id: 'ac', icon: '❄️', title: '空调', description: '开启空调（睡眠温度）', deviceId: 'air', action: 'on' },
+        { id: 'air_purifier', icon: '💨', title: '空气净化器', description: '开启空气净化器', deviceId: 'airPurifier', action: 'on' },
+        { id: 'tv', icon: '📺', title: '电视', description: '关闭电视', deviceId: 'tv', action: 'off' }
       ]
     },
     'back_home': {
@@ -209,85 +131,83 @@ export struct SceneDetailPage {
       title: '温馨回家',
       description: '回到家后，一键开启空调、灯、热水器，关闭扫地机器人、空气净化器等',
       gradientColors: ['#F0F0F0', '#D9D9D9'],
-      triggerConditions: [],  // 无启动条件
+      sceneId: 'back_home',
+      triggerConditions: [
+        { id: 'location', icon: '📍', title: '到达某地', description: '到达指定地理位置时触发', deviceId: '', action: '' }
+      ],
       executionResults: [
-        {
-          id: 'air_purifier',
-          icon: '💨',
-          title: '空气净化器',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'robot_vacuum',
-          icon: '🤖',
-          title: '扫地机器人',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'light',
-          icon: '💡',
-          title: '灯',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'switch',
-          icon: '🔌',
-          title: '开关',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'water_heater',
-          icon: '♨️',
-          title: '热水器',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        },
-        {
-          id: 'ac',
-          icon: '❄️',
-          title: '空调',
-          description: '暂无设备，去商城看看',
-          hasPurchaseButton: true
-        }
+        { id: 'light', icon: '💡', title: '客厅灯', description: '打开客厅灯', deviceId: 'light1', action: 'on' },
+        { id: 'light2', icon: '💡', title: '卧室灯', description: '打开卧室灯', deviceId: 'light2', action: 'on' },
+        { id: 'ac', icon: '❄️', title: '空调', description: '开启空调', deviceId: 'air', action: 'on' },
+        { id: 'air_purifier', icon: '💨', title: '空气净化器', description: '关闭空气净化器', deviceId: 'airPurifier', action: 'off' },
+        { id: 'robot_vacuum', icon: '🤖', title: '扫地机器人', description: '关闭扫地机器人', deviceId: 'robotVacuum', action: 'off' },
+        { id: 'water_heater', icon: '♨️', title: '热水器', description: '开启热水器', deviceId: 'waterHeater', action: 'on' }
       ]
     }
   }
 
-  // 将 SceneModel 转换为 SceneDetailData
   private convertToSceneDetailData(scene: SceneModel): SceneDetailData {
-    // 将触发条件字符串转换为 SceneActionItem 数组
     const triggerConditionItem = {
       id: scene.triggerCondition,
       icon: this.getTriggerIcon(scene.triggerCondition),
       title: SceneStore.getTriggerConditionName(scene.triggerCondition),
       description: this.getTriggerDescription(scene.triggerCondition),
-      hasPurchaseButton: false
+      deviceId: '',
+      action: ''
     } as SceneActionItem
 
-    // 将动作数组转换为 SceneActionItem 数组
     const executionResults = scene.actions.map(actionId => ({
       id: actionId,
       icon: SceneStore.getActionIcon(actionId),
       title: SceneStore.getActionName(actionId),
       description: this.getActionDescription(actionId),
-      hasPurchaseButton: false
+      deviceId: this.getDeviceIdForAction(actionId),
+      action: this.getDeviceAction(actionId)
     } as SceneActionItem))
 
     return {
       id: scene.id,
       title: scene.name,
       description: scene.description || '暂无描述',
-      gradientColors: [scene.color, this.adjustColorBrightness(scene.color, 0.8)], // 生成渐变颜色
+      gradientColors: [scene.color, this.adjustColorBrightness(scene.color, 0.8)],
       triggerConditions: [triggerConditionItem],
-      executionResults: executionResults
+      executionResults: executionResults,
+      sceneId: scene.id
     }
   }
 
-  // 获取触发条件图标
+  private getDeviceIdForAction(actionId: string): string {
+    const map: Record<string, string> = {
+      'turn_on_light': 'light1',
+      'turn_off_light': 'light1',
+      'turn_on_ac': 'air',
+      'turn_off_ac': 'air',
+      'lock_door': 'door',
+      'unlock_door': 'door',
+      'close_curtain': 'curtain',
+      'open_curtain': 'curtain',
+      'turn_on_socket': 'socket',
+      'turn_off_socket': 'socket'
+    }
+    return map[actionId] || ''
+  }
+
+  private getDeviceAction(actionId: string): string {
+    const map: Record<string, string> = {
+      'turn_on_light': 'on',
+      'turn_off_light': 'off',
+      'turn_on_ac': 'on',
+      'turn_off_ac': 'off',
+      'lock_door': 'lock',
+      'unlock_door': 'unlock',
+      'close_curtain': 'off',
+      'open_curtain': 'on',
+      'turn_on_socket': 'on',
+      'turn_off_socket': 'off'
+    }
+    return map[actionId] || ''
+  }
+
   private getTriggerIcon(triggerId: string): string {
     const iconMap: Record<string, string> = {
       'leave_location': '📍',
@@ -300,7 +220,6 @@ export struct SceneDetailPage {
     return iconMap[triggerId] || '⚙️'
   }
 
-  // 获取触发条件描述
   private getTriggerDescription(triggerId: string): string {
     const descMap: Record<string, string> = {
       'leave_location': '离开指定地理位置时触发',
@@ -313,7 +232,6 @@ export struct SceneDetailPage {
     return descMap[triggerId] || '未知触发条件'
   }
 
-  // 获取动作描述
   private getActionDescription(actionId: string): string {
     const descMap: Record<string, string> = {
       'turn_on_light': '打开指定灯光',
@@ -330,9 +248,7 @@ export struct SceneDetailPage {
     return descMap[actionId] || '执行设备操作'
   }
 
-  // 调整颜色亮度
   private adjustColorBrightness(color: string, factor: number): string {
-    // 简单实现：假设颜色是 #RRGGBB 格式
     if (color.startsWith('#') && color.length === 7) {
       const r = parseInt(color.slice(1, 3), 16)
       const g = parseInt(color.slice(3, 5), 16)
@@ -348,20 +264,16 @@ export struct SceneDetailPage {
   }
 
   aboutToAppear(): void {
-    // 从路由参数获取场景ID
     const params = router.getParams() as Record<string, string>
     if (params && params['sceneId']) {
       this.sceneId = params['sceneId']
       
-      // 首先尝试从 SceneStore 加载用户场景
       const userScene = SceneStore.getSceneDetail(this.sceneId)
       if (userScene) {
         this.isUserScene = true
         this.userSceneData = userScene
-        // 将 SceneModel 转换为 SceneDetailData
         this.sceneData = this.convertToSceneDetailData(userScene)
       } else {
-        // 使用硬编码的场景数据
         this.isUserScene = false
         this.userSceneData = null
         this.sceneData = this.sceneDetails[this.sceneId] || null
@@ -369,7 +281,6 @@ export struct SceneDetailPage {
     }
   }
 
-  // 返回上一页
   private goBack(): void {
     console.log('返回按钮被点击');
     try {
@@ -382,13 +293,51 @@ export struct SceneDetailPage {
     }
   }
 
-  // 跳转到商城页面
   private goToStore(): void {
-    // TODO: 跳转到商城页面
     console.log('跳转到商城页面')
   }
 
-  // 编辑场景
+  private getDeviceIsOn(deviceId: string): boolean {
+    if (deviceId === 'light1') return this.lightOn
+    if (deviceId === 'light2') return this.bedroomLightOn
+    if (deviceId === 'light3') return this.kitchenLightOn
+    if (deviceId === 'air') return this.airOn
+    if (deviceId === 'heater') return this.heaterOn
+    if (deviceId === 'door') return this.doorLocked
+    if (deviceId === 'curtain') return this.curtainOpen
+    if (deviceId === 'camera') return this.cameraOn
+    if (deviceId === 'socket') return this.socketOn
+    if (deviceId === 'tv') return this.tvOn
+    if (deviceId === 'airPurifier') return this.airPurifierOn
+    if (deviceId === 'robotVacuum') return this.robotVacuumOn
+    if (deviceId === 'waterHeater') return this.waterHeaterOn
+    if (deviceId === 'doorSensor') return this.doorSensorOn
+    if (deviceId === 'bedsideLamp') return this.bedsideLampOn
+    return false
+  }
+
+  private isActionSatisfied(item: SceneActionItem): boolean {
+    if (!item.deviceId) return true
+    const isOn = this.getDeviceIsOn(item.deviceId)
+    if (item.action === 'on') return isOn
+    if (item.action === 'off') return !isOn
+    if (item.action === 'lock') return this.doorLocked
+    if (item.action === 'unlock') return !this.doorLocked
+    if (item.action === 'monitor') return isOn
+    return false
+  }
+
+  private activateScene(): void {
+    if (this.sceneData) {
+      DeviceStore.triggerScene(this.sceneData.sceneId)
+    }
+  }
+
+  private isSceneActive(): boolean {
+    if (!this.sceneData) return false
+    return this.activeScene === this.sceneData.sceneId
+  }
+
   private editScene(): void {
     if (!this.isUserScene || !this.userSceneData) {
       console.error('无法编辑非用户场景')
@@ -402,7 +351,6 @@ export struct SceneDetailPage {
     })
   }
 
-  // 删除场景
   private deleteScene(): void {
     if (!this.isUserScene || !this.userSceneData) {
       console.error('无法删除非用户场景')
@@ -410,25 +358,19 @@ export struct SceneDetailPage {
     }
     
     console.log('删除场景:', this.sceneId)
-    // 从 SceneStore 中删除
     SceneStore.deleteScene(this.sceneId)
-    // 返回上一页
     router.back()
   }
 
-  // 顶部渐变区域（包含状态栏占位、导航栏、标题和描述）
   @Builder TopGradientSection() {
     Column() {
-      // 状态栏占位（渐变背景）
       Row() {
       }
         .width('100%')
         .height(24)
         .backgroundColor('transparent')
       
-      // 导航栏（返回箭头 + 页面标题）
       Row() {
-        // 返回按钮
         Row() {
           Text('←')
             .fontSize(24)
@@ -449,7 +391,6 @@ export struct SceneDetailPage {
 
         Blank()
         
-        // 页面标题
         Text(this.sceneData?.title || '场景详情')
           .fontSize(FontSize.TITLE2)
           .fontWeight(600)
@@ -457,10 +398,8 @@ export struct SceneDetailPage {
         
         Blank()
         
-        // 右侧按钮区域
         if (this.isUserScene) {
           Row({ space: Spacing.SM }) {
-            // 编辑按钮
             Row() {
               Text('✎')
                 .fontSize(16)
@@ -478,7 +417,6 @@ export struct SceneDetailPage {
                 this.editScene()
               })
             
-            // 删除按钮
             Row() {
               Text('×')
                 .fontSize(20)
@@ -498,7 +436,6 @@ export struct SceneDetailPage {
           }
           .margin({ right: Spacing.LG })
         } else {
-          // 非用户场景保持空白占位
           Row() {
           }
             .width(40)
@@ -510,7 +447,6 @@ export struct SceneDetailPage {
       .height(56)
       .justifyContent(FlexAlign.Center)
       
-      // 标题和描述区域（垂直居中）
       Column({ space: Spacing.SM }) {
         Text(this.sceneData?.title || '场景标题')
           .fontSize(32)
@@ -526,11 +462,11 @@ export struct SceneDetailPage {
       }
       .width('100%')
       .alignItems(HorizontalAlign.Start)
-      .layoutWeight(1) // 占据剩余空间
-      .justifyContent(FlexAlign.Center) // 垂直居中
+      .layoutWeight(1)
+      .justifyContent(FlexAlign.Center)
     }
     .width('100%')
-    .height(200) // 固定高度
+    .height(200)
     .backgroundColor(this.sceneData ? this.sceneData.gradientColors[0] : '#F5E6D3')
     .linearGradient({
       angle: 135,
@@ -543,45 +479,55 @@ export struct SceneDetailPage {
 
   build() {
     Column() {
-      // 顶部渐变区域（包含状态栏占位、导航栏、标题和描述）
       this.TopGradientSection()
       
       Scroll() {
         Column({ space: Spacing.XL }) {
-          // 启动条件模块
           if (this.sceneData && this.sceneData.triggerConditions.length > 0) {
             this.TriggerConditionsSection()
           }
           
-          // 执行结果模块
           if (this.sceneData && this.sceneData.executionResults.length > 0) {
             this.ExecutionResultsSection()
           }
         }
         .width('100%')
-        .padding({ left: Spacing.LG, right: Spacing.LG, bottom: Spacing.XXL, top: Spacing.LG })
+        .padding({ left: Spacing.LG, right: Spacing.LG, bottom: Spacing.XL, top: Spacing.LG })
       }
       .layoutWeight(1)
       .scrollBar(BarState.Off)
+
+      if (this.sceneData) {
+        Row() {
+          Text(this.isSceneActive() ? '停止场景' : '启动场景')
+            .fontSize(FontSize.BODY1)
+            .fontWeight(600)
+            .fontColor('#FFFFFF')
+        }
+        .width('90%')
+        .height(48)
+        .justifyContent(FlexAlign.Center)
+        .borderRadius(24)
+        .backgroundColor(this.isSceneActive() ? Colors.WARNING : Colors.BRAND_PRIMARY)
+        .margin({ bottom: Spacing.XXL })
+        .onClick(() => {
+          this.activateScene()
+        })
+      }
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F8F9FA') // 极浅灰白色背景
+    .backgroundColor(ThemeColors.bg(this.isDark))
   }
 
-
-
-  // 启动条件模块
   @Builder TriggerConditionsSection() {
     Column({ space: Spacing.MD }) {
-      // 模块标题
       Text('启动条件')
         .fontSize(FontSize.BODY1)
         .fontWeight(500)
-        .fontColor('#666666')
+        .fontColor(ThemeColors.textSecondary(this.isDark))
         .alignSelf(ItemAlign.Start)
       
-      // 条件卡片列表
       Column({ space: Spacing.SM }) {
         ForEach(this.sceneData?.triggerConditions || [], (item: SceneActionItem) => {
           this.ActionCard(item)
@@ -592,17 +538,14 @@ export struct SceneDetailPage {
     .width('100%')
   }
 
-  // 执行结果模块
   @Builder ExecutionResultsSection() {
     Column({ space: Spacing.MD }) {
-      // 模块标题
       Text('执行结果')
         .fontSize(FontSize.BODY1)
         .fontWeight(500)
-        .fontColor('#666666')
+        .fontColor(ThemeColors.textSecondary(this.isDark))
         .alignSelf(ItemAlign.Start)
       
-      // 结果卡片列表
       Column({ space: Spacing.SM }) {
         ForEach(this.sceneData?.executionResults || [], (item: SceneActionItem) => {
           this.ActionCard(item)
@@ -613,58 +556,42 @@ export struct SceneDetailPage {
     .width('100%')
   }
 
-  // 动作卡片（通用，用于启动条件和执行结果）
   @Builder ActionCard(item: SceneActionItem) {
     Row({ space: Spacing.MD }) {
-      // 图标
       Text(item.icon)
         .fontSize(24)
-        .fontColor('#000000')
+        .fontColor(ThemeColors.textPrimary(this.isDark))
         .margin({ left: Spacing.MD })
       
-      // 文字区域
       Column({ space: 2 }) {
         Text(item.title)
           .fontSize(FontSize.BODY1)
           .fontWeight(500)
-          .fontColor('#000000')
+          .fontColor(ThemeColors.textPrimary(this.isDark))
           .textAlign(TextAlign.Start)
         
-        if (item.description) {
-          Text(item.description)
-            .fontSize(FontSize.CAPTION1)
-            .fontColor('#666666')
-            .textAlign(TextAlign.Start)
-        }
+        Text(item.description)
+          .fontSize(FontSize.CAPTION1)
+          .fontColor(ThemeColors.textSecondary(this.isDark))
+          .textAlign(TextAlign.Start)
       }
       .layoutWeight(1)
       
-      // 购买按钮（如果有）
-      if (item.hasPurchaseButton) {
-        Text('购买')
+      if (item.deviceId) {
+        Text(this.isActionSatisfied(item) ? '✓' : '待执行')
           .fontSize(FontSize.CAPTION1)
           .fontWeight(500)
-          .fontColor('#00C1B3') // 蓝绿色
-          .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-          .borderRadius(16)
-          .border({
-            width: 1,
-            color: '#00C1B3',
-            style: BorderStyle.Solid
-          })
+          .fontColor(this.isActionSatisfied(item) ? Colors.SUCCESS : ThemeColors.textTertiary(this.isDark))
           .margin({ right: Spacing.MD })
-          .onClick(() => {
-            this.goToStore()
-          })
       }
     }
     .width('100%')
     .height(72)
     .borderRadius(16)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(ThemeColors.surface(this.isDark))
     .shadow({
       radius: 4,
-      color: '#0A000000',
+      color: ThemeColors.cardShadow(this.isDark),
       offsetX: 0,
       offsetY: 2
     })

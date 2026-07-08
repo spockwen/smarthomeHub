@@ -2,19 +2,16 @@
  * 能耗统计页 - 用电趋势图 + 分类饼图
  * 基于 HarmonyOS Design 规范实现
  */
-import { Colors, FontSize, Spacing, BorderRadius, GlowConfig } from '../common/DesignConstants'
+import { Colors, FontSize, Spacing, BorderRadius, GlowConfig, ThemeColors } from '../common/DesignConstants'
 import { HaloButton } from '../components/HaloButton'
 
-// 时间范围类型
 type TimeRange = 'day' | 'week' | 'month'
 
-// 能耗数据点
 interface EnergyDataPoint {
   time: string
   value: number
 }
 
-// 设备能耗数据
 interface DeviceEnergy {
   id: string
   name: string
@@ -23,7 +20,6 @@ interface DeviceEnergy {
   percentage: number
 }
 
-// 分类能耗项
 interface CategoryItem {
   name: string
   value: number
@@ -31,7 +27,6 @@ interface CategoryItem {
   percentage: number
 }
 
-// 时间范围选项
 interface TimeRangeOption {
   id: string
   name: string
@@ -40,16 +35,10 @@ interface TimeRangeOption {
 @Entry
 @Component
 export struct EnergyStatsPage {
-  // 当前时间范围
+  @StorageProp('isDarkMode') isDark: boolean = false
   @State private timeRange: TimeRange = 'day'
-
-  // 总能耗
   @State private totalEnergy: number = 8.5
-
-  // 同比数据
-  @State private comparedPercentage: number = -12.3  // 负数表示下降
-
-  // 用电趋势数据
+  @State private comparedPercentage: number = -12.3
   @State private trendData: EnergyDataPoint[] = [
     { time: '00:00', value: 0.2 },
     { time: '04:00', value: 0.1 },
@@ -59,16 +48,12 @@ export struct EnergyStatsPage {
     { time: '20:00', value: 2.3 },
     { time: '24:00', value: 2.4 }
   ]
-
-  // 分类能耗数据
   @State private categoryData: CategoryItem[] = [
     { name: '照明', value: 2.5, color: '#FFB800', percentage: 29 },
     { name: '空调', value: 4.2, color: '#007DFF', percentage: 49 },
     { name: '家电', value: 1.3, color: '#00C854', percentage: 15 },
     { name: '其他', value: 0.5, color: '#6B7280', percentage: 7 }
   ]
-
-  // 设备能耗排行
   @State private deviceRanking: DeviceEnergy[] = [
     { id: '1', name: '空调', icon: '❄️', energy: 4.2, percentage: 49 },
     { id: '2', name: '客厅灯', icon: '💡', energy: 1.5, percentage: 18 },
@@ -77,7 +62,6 @@ export struct EnergyStatsPage {
     { id: '5', name: '智能插座', icon: '🔌', energy: 0.6, percentage: 7 }
   ]
 
-  // 时间范围选项
   private readonly timeRanges: TimeRangeOption[] = [
     { id: 'day', name: '今日' },
     { id: 'week', name: '本周' },
@@ -86,24 +70,14 @@ export struct EnergyStatsPage {
 
   build() {
     Column() {
-      // 顶部导航栏
       this.NavigationBar()
 
       Scroll() {
         Column({ space: Spacing.LG }) {
-          // 总能耗卡片
           this.TotalEnergyCard()
-
-          // 用电趋势图
           this.TrendChart()
-
-          // 分类能耗
           this.CategoryChart()
-
-          // 设备能耗排行
           this.DeviceRanking()
-
-          // 节能建议
           this.EnergyTips()
         }
         .width('100%')
@@ -114,10 +88,9 @@ export struct EnergyStatsPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Colors.BG_LIGHT)
+    .backgroundColor(ThemeColors.bg(this.isDark))
   }
 
-  // 导航栏
   @Builder NavigationBar() {
     Row() {
       HaloButton({
@@ -131,7 +104,7 @@ export struct EnergyStatsPage {
       Text('能耗统计')
         .fontSize(FontSize.TITLE3)
         .fontWeight(600)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
 
       Blank()
 
@@ -144,24 +117,21 @@ export struct EnergyStatsPage {
     .width('100%')
     .height(56)
     .padding({ left: Spacing.SM, right: Spacing.SM })
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
 
-  // 总能耗卡片
   @Builder TotalEnergyCard() {
     Column({ space: Spacing.LG }) {
-      // 时间范围选择
       Row({ space: Spacing.SM }) {
         ForEach(this.timeRanges, (range: TimeRangeOption) => {
           Text(range.name)
             .fontSize(FontSize.BODY2)
-            .fontColor(this.timeRange === range.id ? Colors.BRAND_PRIMARY : Colors.TEXT_SECONDARY_LIGHT)
+            .fontColor(this.timeRange === range.id ? Colors.BRAND_PRIMARY : ThemeColors.textSecondary(this.isDark))
             .padding({ left: 16, right: 16, top: 8, bottom: 8 })
             .borderRadius(BorderRadius.MEDIUM)
-            .backgroundColor(this.timeRange === range.id ? Colors.BRAND_PRIMARY + '15' : 'transparent')
+            .backgroundColor(this.timeRange === range.id ? ThemeColors.selectedBg(this.isDark) : 'transparent')
             .onClick(() => {
               this.timeRange = range.id as TimeRange
-              // 更新数据
               if (range.id === 'week') {
                 this.totalEnergy = 62.3
                 this.comparedPercentage = -8.5
@@ -178,20 +148,18 @@ export struct EnergyStatsPage {
       .width('100%')
       .justifyContent(FlexAlign.Center)
 
-      // 总能耗数值
       Column({ space: 8 }) {
         Row({ space: 4 }) {
           Text(this.totalEnergy.toFixed(1))
             .fontSize(48)
             .fontWeight(700)
-            .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+            .fontColor(ThemeColors.textPrimary(this.isDark))
 
           Text('kWh')
             .fontSize(FontSize.TITLE3)
-            .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+            .fontColor(ThemeColors.textSecondary(this.isDark))
         }
 
-        // 同比数据
         Row({ space: 4 }) {
           Text(this.comparedPercentage < 0 ? '↓' : '↑')
             .fontSize(16)
@@ -203,23 +171,22 @@ export struct EnergyStatsPage {
 
           Text('同比昨日')
             .fontSize(FontSize.BODY2)
-            .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+            .fontColor(ThemeColors.textSecondary(this.isDark))
         }
       }
     }
     .width('100%')
     .padding(Spacing.XL)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
     .shadow({
       radius: 4,
-      color: '#1A000000',
+      color: ThemeColors.cardShadow(this.isDark),
       offsetX: 0,
       offsetY: 2
     })
   }
 
-  // 用电趋势图
   @Builder TrendChart() {
     Column({ space: Spacing.MD }) {
       Row() {
@@ -229,17 +196,14 @@ export struct EnergyStatsPage {
         Text('用电趋势')
           .fontSize(FontSize.BODY1)
           .fontWeight(600)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
       }
       .width('100%')
 
-      // 简化折线图（使用 Canvas 或自定义绘制）
       Column() {
-        // 数据点可视化
         Row({ space: 4 }) {
           ForEach(this.trendData, (point: EnergyDataPoint, index: number) => {
             Column({ space: 4 }) {
-              // 柱状图
               Column()
                 .width(20)
                 .height(point.value * 40)
@@ -252,11 +216,10 @@ export struct EnergyStatsPage {
                   ]
                 })
 
-              // 时间标签
               if (index % 2 === 0) {
                 Text(point.time.split(':')[0] + 'h')
                   .fontSize(FontSize.CAPTION2)
-                  .fontColor(Colors.TEXT_TERTIARY_LIGHT)
+                  .fontColor(ThemeColors.textTertiary(this.isDark))
               }
             }
             .height('100%')
@@ -271,15 +234,14 @@ export struct EnergyStatsPage {
       .height(140)
       .padding(Spacing.MD)
       .borderRadius(BorderRadius.MEDIUM)
-      .backgroundColor('#F5F5F5')
+      .backgroundColor(ThemeColors.itemBg(this.isDark))
     }
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
 
-  // 分类能耗饼图
   @Builder CategoryChart() {
     Column({ space: Spacing.MD }) {
       Row() {
@@ -289,39 +251,35 @@ export struct EnergyStatsPage {
         Text('分类能耗')
           .fontSize(FontSize.BODY1)
           .fontWeight(600)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
       }
       .width('100%')
 
-      // 分类列表
       Column({ space: Spacing.SM }) {
         ForEach(this.categoryData, (item: CategoryItem) => {
           Row() {
-            // 颜色标记
             Column()
               .width(12)
               .height(12)
               .borderRadius(6)
               .backgroundColor(item.color)
 
-            // 名称
             Text(item.name)
               .fontSize(FontSize.BODY2)
-              .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+              .fontColor(ThemeColors.textPrimary(this.isDark))
               .margin({ left: Spacing.SM })
 
             Blank()
 
-            // 数值和百分比
             Row({ space: 8 }) {
               Text(`${item.value}kWh`)
                 .fontSize(FontSize.BODY2)
                 .fontWeight(500)
-                .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+                .fontColor(ThemeColors.textPrimary(this.isDark))
 
               Text(`${item.percentage}%`)
                 .fontSize(FontSize.CAPTION1)
-                .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+                .fontColor(ThemeColors.textSecondary(this.isDark))
             }
           }
           .width('100%')
@@ -333,10 +291,9 @@ export struct EnergyStatsPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
 
-  // 设备能耗排行
   @Builder DeviceRanking() {
     Column({ space: Spacing.MD }) {
       Row() {
@@ -346,43 +303,38 @@ export struct EnergyStatsPage {
         Text('设备能耗排行')
           .fontSize(FontSize.BODY1)
           .fontWeight(600)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
       }
       .width('100%')
 
-      // 排行列表
       Column({ space: Spacing.SM }) {
         ForEach(this.deviceRanking, (device: DeviceEnergy, index: number) => {
           Row() {
-            // 排名
             Text(`${index + 1}`)
               .fontSize(FontSize.BODY1)
               .fontWeight(600)
-              .fontColor(index < 3 ? Colors.BRAND_PRIMARY : Colors.TEXT_TERTIARY_LIGHT)
+              .fontColor(index < 3 ? Colors.BRAND_PRIMARY : ThemeColors.textTertiary(this.isDark))
               .width(24)
 
-            // 设备图标
             Text(device.icon)
               .fontSize(24)
               .margin({ left: Spacing.SM })
 
-            // 设备名称
             Text(device.name)
               .fontSize(FontSize.BODY2)
-              .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+              .fontColor(ThemeColors.textPrimary(this.isDark))
               .margin({ left: Spacing.SM })
               .layoutWeight(1)
 
-            // 能耗数值
             Text(`${device.energy}kWh`)
               .fontSize(FontSize.BODY2)
               .fontWeight(500)
-              .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+              .fontColor(ThemeColors.textPrimary(this.isDark))
           }
           .width('100%')
           .padding(Spacing.SM)
           .borderRadius(BorderRadius.MEDIUM)
-          .backgroundColor('#F5F5F5')
+          .backgroundColor(ThemeColors.itemBg(this.isDark))
         })
       }
       .width('100%')
@@ -390,10 +342,9 @@ export struct EnergyStatsPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
 
-  // 节能建议
   @Builder EnergyTips() {
     Column({ space: Spacing.MD }) {
       Row() {
@@ -403,11 +354,10 @@ export struct EnergyStatsPage {
         Text('节能建议')
           .fontSize(FontSize.BODY1)
           .fontWeight(600)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
       }
       .width('100%')
 
-      // 建议列表
       Column({ space: Spacing.SM }) {
         this.TipItem('空调温度设置在26℃可节省约10%能耗', '❄️')
         this.TipItem('离开房间时记得关闭灯光', '💡')
@@ -418,10 +368,9 @@ export struct EnergyStatsPage {
     .width('100%')
     .padding(Spacing.LG)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
 
-  // 建议项
   @Builder TipItem(text: string, icon: string) {
     Row({ space: Spacing.SM }) {
       Text(icon)
@@ -429,7 +378,7 @@ export struct EnergyStatsPage {
 
       Text(text)
         .fontSize(FontSize.BODY2)
-        .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+        .fontColor(ThemeColors.textSecondary(this.isDark))
         .layoutWeight(1)
     }
     .width('100%')

@@ -3,7 +3,7 @@
  * 基于 HarmonyOS Design 规范实现
  */
 import { DeviceStore } from '../DeviceStore'
-import { Colors, FontSize, Spacing, BorderRadius, GlowConfig } from '../common/DesignConstants'
+import { Colors, FontSize, Spacing, BorderRadius, GlowConfig, ThemeColors } from '../common/DesignConstants'
 import { HaloButton } from '../components/HaloButton'
 import { SceneCard, SceneModel } from '../components/SceneCard'
 import { DeviceCard, DeviceModel } from '../components/DeviceCard'
@@ -43,8 +43,14 @@ export struct HomePage {
   @StorageLink('cameraOn') cameraOn: boolean = true
   @StorageLink('socketOn') socketOn: boolean = true
   @StorageLink('tvOn') tvOn: boolean = false
+  @StorageLink('airPurifierOn') airPurifierOn: boolean = false
+  @StorageLink('robotVacuumOn') robotVacuumOn: boolean = false
+  @StorageLink('waterHeaterOn') waterHeaterOn: boolean = false
+  @StorageLink('doorSensorOn') doorSensorOn: boolean = true
+  @StorageLink('bedsideLampOn') bedsideLampOn: boolean = false
   @StorageLink('activeScene') @Watch('onActiveSceneChange') activeScene: string = ''
   @StorageLink('homeDeviceIds') @Watch('onHomeIdsChange') homeDeviceIdsStr: string = 'light1,air,door,curtain'
+  @StorageProp('isDarkMode') isDark: boolean = false
   
   @State private scenes: SceneModel[] = []
   @State private showAddSheet: boolean = false
@@ -96,7 +102,12 @@ export struct HomePage {
       'camera': { id: 'camera', name: '摄像头', icon: '📹', room: '客厅', status: 'online', value: '监控中' },
       'curtain': { id: 'curtain', name: '智能窗帘', icon: '🪟', room: '客厅', status: 'online', value: '已关闭' },
       'socket': { id: 'socket', name: '智能插座', icon: '🔌', room: '卧室', status: 'online', value: '供电中' },
-      'tv': { id: 'tv', name: '智能电视', icon: '📺', room: '客厅', status: 'online', value: '待机' }
+      'tv': { id: 'tv', name: '智能电视', icon: '📺', room: '客厅', status: 'online', value: '待机' },
+      'airPurifier': { id: 'airPurifier', name: '空气净化器', icon: '💨', room: '卧室', status: 'online', value: '净化中' },
+      'robotVacuum': { id: 'robotVacuum', name: '扫地机器人', icon: '🤖', room: '客厅', status: 'online', value: '清扫中' },
+      'waterHeater': { id: 'waterHeater', name: '热水器', icon: '♨️', room: '卫生间', status: 'online', value: '加热中' },
+      'doorSensor': { id: 'doorSensor', name: '门磁传感器', icon: '📡', room: '入户', status: 'online', value: '监控中' },
+      'bedsideLamp': { id: 'bedsideLamp', name: '床头灯', icon: '💡', room: '卧室', status: 'online', value: '已关闭' }
     }
     const list: HomeDeviceItem[] = []
     for (const id of ids) {
@@ -118,6 +129,11 @@ export struct HomePage {
     if (id === 'curtain') return this.curtainOpen
     if (id === 'socket') return this.socketOn
     if (id === 'tv') return this.tvOn
+    if (id === 'airPurifier') return this.airPurifierOn
+    if (id === 'robotVacuum') return this.robotVacuumOn
+    if (id === 'waterHeater') return this.waterHeaterOn
+    if (id === 'doorSensor') return this.doorSensorOn
+    if (id === 'bedsideLamp') return this.bedsideLampOn
     return false
   }
   
@@ -135,7 +151,12 @@ export struct HomePage {
     { id: 'camera', name: '摄像头', icon: '📹' },
     { id: 'curtain', name: '智能窗帘', icon: '🪟' },
     { id: 'socket', name: '智能插座', icon: '🔌' },
-    { id: 'tv', name: '智能电视', icon: '📺' }
+    { id: 'tv', name: '智能电视', icon: '📺' },
+    { id: 'airPurifier', name: '空气净化器', icon: '💨' },
+    { id: 'robotVacuum', name: '扫地机器人', icon: '🤖' },
+    { id: 'waterHeater', name: '热水器', icon: '♨️' },
+    { id: 'doorSensor', name: '门磁传感器', icon: '📡' },
+    { id: 'bedsideLamp', name: '床头灯', icon: '💡' }
   ]
   
   private scaleSelect(item: HomeDeviceItem): number {
@@ -202,12 +223,21 @@ export struct HomePage {
       DeviceStore.setSocketOn(isOn)
     } else if (deviceId === 'tv') {
       DeviceStore.setTvOn(isOn)
+    } else if (deviceId === 'airPurifier') {
+      DeviceStore.setAirPurifierOn(isOn)
+    } else if (deviceId === 'robotVacuum') {
+      DeviceStore.setRobotVacuumOn(isOn)
+    } else if (deviceId === 'waterHeater') {
+      DeviceStore.setWaterHeaterOn(isOn)
+    } else if (deviceId === 'doorSensor') {
+      DeviceStore.setDoorSensorOn(isOn)
+    } else if (deviceId === 'bedsideLamp') {
+      DeviceStore.setBedsideLampOn(isOn)
     }
   }
   private triggerScene(sceneId: string) {
-    // 更新场景激活状态
-    const newActiveScene = this.activeScene === sceneId ? '' : sceneId
-    DeviceStore.setActiveScene(newActiveScene)
+    const wasActive = this.activeScene === sceneId
+    DeviceStore.triggerScene(sceneId)
     
     this.scenes = this.scenes.map(scene => {
       const updatedScene: SceneModel = {
@@ -215,46 +245,11 @@ export struct HomePage {
         name: scene.name,
         icon: scene.icon,
         color: scene.color,
-        isActive: scene.id === sceneId && this.activeScene !== sceneId,
+        isActive: scene.id === sceneId && !wasActive,
         deviceCount: scene.deviceCount
       }
       return updatedScene
     })
-    
-    // 根据场景执行设备操作
-    if (sceneId === 'home') {
-      // 回家场景：开启客厅灯和空调，关闭窗帘
-      DeviceStore.setLightOn(true)
-      DeviceStore.setAirOn(true)
-      DeviceStore.setCurtainOpen(false)
-    } else if (sceneId === 'leave') {
-      // 离家场景：关闭所有灯、空调、电视、插座，开启门锁和摄像头
-      DeviceStore.setLightOn(false)
-      DeviceStore.setBedroomLightOn(false)
-      DeviceStore.setKitchenLightOn(false)
-      DeviceStore.setAirOn(false)
-      DeviceStore.setHeaterOn(false)
-      DeviceStore.setDoorLocked(true)
-      DeviceStore.setCameraOn(true)
-      DeviceStore.setCurtainOpen(false)
-      DeviceStore.setSocketOn(false)
-      DeviceStore.setTvOn(false)
-    } else if (sceneId === 'sleep') {
-      // 睡眠场景：关闭所有灯，开启空调，关闭窗帘
-      DeviceStore.setLightOn(false)
-      DeviceStore.setBedroomLightOn(false)
-      DeviceStore.setKitchenLightOn(false)
-      DeviceStore.setAirOn(true)
-      DeviceStore.setCurtainOpen(false)
-      DeviceStore.setTvOn(false)
-    } else if (sceneId === 'movie') {
-      // 观影场景：关闭所有灯，关闭窗帘，开启电视
-      DeviceStore.setLightOn(false)
-      DeviceStore.setBedroomLightOn(false)
-      DeviceStore.setKitchenLightOn(false)
-      DeviceStore.setCurtainOpen(false)
-      DeviceStore.setTvOn(true)
-    }
   }
   
   build() {
@@ -277,7 +272,7 @@ export struct HomePage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Colors.BG_LIGHT)
+    .backgroundColor(ThemeColors.bg(this.isDark))
     .scrollBar(BarState.Off)
   }
   
@@ -288,11 +283,11 @@ export struct HomePage {
         Text('鸿蒙智家')
           .fontSize(FontSize.TITLE1)
           .fontWeight(700)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
         
         Text('AI Hub')
           .fontSize(FontSize.BODY2)
-          .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+          .fontColor(ThemeColors.textSecondary(this.isDark))
       }
       .alignItems(HorizontalAlign.Start)
       
@@ -342,19 +337,19 @@ export struct HomePage {
       Text(value)
         .fontSize(FontSize.TITLE3)
         .fontWeight(700)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
       
       Text(label)
         .fontSize(FontSize.CAPTION1)
-        .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+        .fontColor(ThemeColors.textSecondary(this.isDark))
     }
     .layoutWeight(1)
     .padding(Spacing.MD)
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
     .shadow({
       radius: 4,
-      color: '#1A000000',
+      color: ThemeColors.cardShadow(this.isDark),
       offsetX: 0,
       offsetY: 2
     })
@@ -373,7 +368,7 @@ export struct HomePage {
         Text('快捷场景')
           .fontSize(FontSize.TITLE3)
           .fontWeight(600)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
         
         Blank()
         
@@ -416,7 +411,7 @@ export struct HomePage {
         Text('我的设备')
           .fontSize(FontSize.TITLE3)
           .fontWeight(600)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
         
         if (this.isEditing) {
           Text('编辑中')
@@ -438,7 +433,7 @@ export struct HomePage {
         }
         .padding({ left: 10, right: 10, top: 6, bottom: 6 })
         .borderRadius(BorderRadius.MEDIUM)
-        .backgroundColor(Colors.BRAND_PRIMARY + '10')
+        .backgroundColor(ThemeColors.selectedBg(this.isDark))
         .onClick(() => {
           this.showAddSheet = true
         })
@@ -458,7 +453,7 @@ export struct HomePage {
         Row() {
           Text('长按拖拽排序，点击 ✕ 移除')
             .fontSize(FontSize.CAPTION1)
-            .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+            .fontColor(ThemeColors.textSecondary(this.isDark))
             .layoutWeight(1)
           
           Text('完成')
@@ -466,7 +461,7 @@ export struct HomePage {
             .fontColor(Colors.BRAND_PRIMARY)
             .padding({ left: 16, right: 16, top: 6, bottom: 6 })
             .borderRadius(BorderRadius.MEDIUM)
-            .backgroundColor(Colors.BRAND_PRIMARY + '10')
+            .backgroundColor(ThemeColors.selectedBg(this.isDark))
             .onClick(() => {
               this.isEditing = false
             })
@@ -571,7 +566,7 @@ export struct HomePage {
     .bindSheet($$this.showAddSheet, this.AddDeviceSheetBuilder(), {
       height: '60%',
       dragBar: true,
-      backgroundColor: Colors.SURFACE_LIGHT,
+      backgroundColor: ThemeColors.surface(this.isDark),
       onDisappear: () => {
         this.showAddSheet = false
       }
@@ -583,7 +578,7 @@ export struct HomePage {
       Text('添加设备到首页')
         .fontSize(FontSize.TITLE3)
         .fontWeight(600)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .fontColor(ThemeColors.textPrimary(this.isDark))
         .width('100%')
         .padding({ left: Spacing.LG, top: Spacing.MD })
       
@@ -596,21 +591,21 @@ export struct HomePage {
               
               Text(item.name)
                 .fontSize(FontSize.BODY1)
-                .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+                .fontColor(ThemeColors.textPrimary(this.isDark))
                 .margin({ left: Spacing.MD })
                 .layoutWeight(1)
               
               if (this.getHomeDeviceIds().includes(item.id)) {
                 Text('已添加')
                   .fontSize(FontSize.CAPTION1)
-                  .fontColor(Colors.TEXT_TERTIARY_LIGHT)
+                  .fontColor(ThemeColors.textTertiary(this.isDark))
               } else {
                 Text('+ 添加')
                   .fontSize(FontSize.CAPTION1)
                   .fontColor(Colors.BRAND_PRIMARY)
                   .padding({ left: 10, right: 10, top: 4, bottom: 4 })
                   .borderRadius(BorderRadius.SMALL)
-                  .backgroundColor(Colors.BRAND_PRIMARY + '10')
+                  .backgroundColor(ThemeColors.selectedBg(this.isDark))
                   .onClick(() => {
                     DeviceStore.addHomeDevice(item.id)
                   })
@@ -620,7 +615,7 @@ export struct HomePage {
             .height(56)
             .padding({ left: Spacing.LG, right: Spacing.LG })
             .borderRadius(BorderRadius.MEDIUM)
-            .backgroundColor('#F5F5F5')
+            .backgroundColor(ThemeColors.itemBg(this.isDark))
           })
         }
         .padding({ left: Spacing.LG, right: Spacing.LG, bottom: Spacing.XXL })

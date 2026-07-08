@@ -182,6 +182,60 @@ export class ShadowConfig {
   }
 }
 
+// ==================== 主题感知颜色 ====================
+export type ThemeMode = 'light' | 'dark' | 'follow-system'
+
+export class ThemeColors {
+  static bg(isDark: boolean): string {
+    return isDark ? Colors.BG_DARK : Colors.BG_LIGHT
+  }
+  static surface(isDark: boolean): string {
+    return isDark ? Colors.SURFACE_DARK : Colors.SURFACE_LIGHT
+  }
+  static elevated(isDark: boolean): string {
+    return isDark ? Colors.ELEVATED_DARK : Colors.ELEVATED_LIGHT
+  }
+  static divider(isDark: boolean): string {
+    return isDark ? Colors.DIVIDER_DARK : Colors.DIVIDER_LIGHT
+  }
+  static textPrimary(isDark: boolean): string {
+    return isDark ? Colors.TEXT_PRIMARY_DARK : Colors.TEXT_PRIMARY_LIGHT
+  }
+  static textSecondary(isDark: boolean): string {
+    return isDark ? Colors.TEXT_SECONDARY_DARK : Colors.TEXT_SECONDARY_LIGHT
+  }
+  static textTertiary(isDark: boolean): string {
+    return isDark ? Colors.TEXT_TERTIARY_DARK : Colors.TEXT_TERTIARY_LIGHT
+  }
+  static textDisabled(isDark: boolean): string {
+    return isDark ? Colors.TEXT_DISABLED_DARK : Colors.TEXT_DISABLED_LIGHT
+  }
+  static cardShadow(isDark: boolean): string {
+    return isDark ? '#1AFFFFFF' : '#1A000000'
+  }
+  static itemBg(isDark: boolean): string {
+    return isDark ? '#2A2A2A' : '#F5F5F5'
+  }
+  static selectedBg(isDark: boolean): string {
+    return isDark ? '#1A007DFF' : Colors.BRAND_PRIMARY + '10'
+  }
+  static glowBlue(isDark: boolean): string {
+    return isDark ? '#4D007DFF' : Colors.GLOW_BLUE
+  }
+  static cardBg(isDark: boolean): string {
+    if (isDark) return 'rgba(42, 42, 42, 0.7)'
+    return 'rgba(255, 255, 255, 0.7)'
+  }
+  static cardBgOff(isDark: boolean): string {
+    if (isDark) return 'rgba(38, 38, 38, 0.6)'
+    return 'rgba(250, 250, 250, 0.6)'
+  }
+  static cardBgOffline(isDark: boolean): string {
+    if (isDark) return 'rgba(50, 50, 50, 0.8)'
+    return 'rgba(240, 240, 240, 0.8)'
+  }
+}
+
 // ==================== 动画曲线 ====================
 export class AnimationCurves {
   static readonly EASE_OUT = 'EaseOut'           // 进入动画

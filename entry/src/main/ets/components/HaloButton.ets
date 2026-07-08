@@ -2,7 +2,7 @@
  * 沉浸光感按钮组件
  * 实现毛玻璃基底 + 动态光源跟随 + 三层视觉模型（外发光层+控件主体层+内阴影层）
  */
-import { Colors, GlowConfig, BorderRadius, FontSize, TouchTarget } from '../common/DesignConstants'
+import { Colors, GlowConfig, BorderRadius, FontSize, TouchTarget, ThemeColors } from '../common/DesignConstants'
 
 // 按钮尺寸类型
 export type HaloButtonSize = 'small' | 'medium' | 'large'
@@ -46,6 +46,7 @@ export struct HaloButton {
   @State private touchY: number = 0  // 触摸点Y坐标
   @State private glowScale: number = 1  // 光晕扩散动画
   @State private glowOpacity: number = 0  // 光晕透明度
+  @StorageProp('isDarkMode') isDark: boolean = false
   
   // 计算按钮尺寸
   private getButtonSize(): number {
@@ -81,13 +82,13 @@ export struct HaloButton {
   // 计算文字颜色
   private getTextColor(): string {
     if (this.disabled) {
-      return Colors.TEXT_TERTIARY_LIGHT
+      return ThemeColors.textTertiary(this.isDark)
     }
     
     if (this.type === 'primary' || this.type === 'secondary') {
       return '#FFFFFF'
     } else {
-      return this.isActive ? Colors.BRAND_PRIMARY : Colors.TEXT_PRIMARY_LIGHT
+      return this.isActive ? Colors.BRAND_PRIMARY : ThemeColors.textPrimary(this.isDark)
     }
   }
   
@@ -196,7 +197,7 @@ export struct HaloButton {
       .borderRadius(BorderRadius.MEDIUM)
       .backgroundColor(this.getBackgroundColor())
       .borderWidth(this.type === 'outline' ? 2 : 0)
-      .borderColor(this.isActive ? Colors.BRAND_PRIMARY : Colors.TEXT_TERTIARY_LIGHT)
+      .borderColor(this.isActive ? Colors.BRAND_PRIMARY : ThemeColors.textTertiary(this.isDark))
       // 毛玻璃效果（仅对outline和ghost类型）
       .backgroundBlurStyle(
         (this.type === 'outline' || this.type === 'ghost') ? BlurStyle.Thin : BlurStyle.NONE,
@@ -207,7 +208,7 @@ export struct HaloButton {
       // 阴影效果（内阴影层）
       .shadow({
         radius: this.isPressed ? 8 : (this.isActive ? 12 : 4),
-        color: this.isPressed ? '#40000000' : (this.isActive ? Colors.GLOW_BLUE : '#1A000000'),
+        color: this.isPressed ? '#40000000' : (this.isActive ? ThemeColors.glowBlue(this.isDark) : ThemeColors.cardShadow(this.isDark)),
         offsetX: 0,
         offsetY: this.isPressed ? 1 : 4
       })

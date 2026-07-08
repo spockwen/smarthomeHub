@@ -2,7 +2,7 @@
  * 沉浸光感滑块组件
  * 实现带光效的数值调节 + 光源跟随指尖移动
  */
-import { Colors, GlowConfig, BorderRadius, ComponentSize, FontSize } from '../common/DesignConstants'
+import { Colors, GlowConfig, BorderRadius, ComponentSize, FontSize, ThemeColors } from '../common/DesignConstants'
 
 @Component
 export struct HaloSlider {
@@ -29,6 +29,7 @@ export struct HaloSlider {
   @State private touchX: number = 0  // 触摸点X坐标
   @State private lightGlowPosition: number = 0  // 光源位置
   @State private glowIntensity: number = 0  // 光晕强度
+  @StorageProp('isDarkMode') isDark: boolean = false
   
   // 尺寸常量
   private readonly TRACK_HEIGHT = ComponentSize.SLIDER_TRACK_HEIGHT
@@ -85,7 +86,7 @@ export struct HaloSlider {
           Text(`${Math.round(this.value)}${this.unit}`)
             .fontSize(FontSize.TITLE2)
             .fontWeight(700)
-            .fontColor(this.disabled ? Colors.TEXT_TERTIARY_LIGHT : Colors.TEXT_PRIMARY_LIGHT)
+            .fontColor(this.disabled ? ThemeColors.textTertiary(this.isDark) : ThemeColors.textPrimary(this.isDark))
         }
         .width('100%')
         .justifyContent(FlexAlign.Center)
@@ -168,7 +169,7 @@ export struct HaloSlider {
               .backgroundColor('#FFFFFF')
               .shadow({
                 radius: this.isDragging ? 14 : 8,
-                color: this.isDragging ? Colors.GLOW_BLUE : '#33000000',
+                color: this.isDragging ? ThemeColors.glowBlue(this.isDark) : '#33000000',
                 offsetX: 0,
                 offsetY: this.isDragging ? 0 : 2
               })
@@ -185,7 +186,7 @@ export struct HaloSlider {
         .width('100%')
         .height(this.TRACK_HEIGHT)
         .borderRadius(BorderRadius.FULL)
-        .backgroundColor(this.disabled ? Colors.TEXT_TERTIARY_LIGHT : '#E5E5E5')
+        .backgroundColor(this.disabled ? ThemeColors.textTertiary(this.isDark) : '#E5E5E5')
         .justifyContent(FlexAlign.Start)
         .alignItems(VerticalAlign.Center)
       }

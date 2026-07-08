@@ -2,7 +2,7 @@
  * 沉浸光感开关组件
  * 简洁的状态切换开关
  */
-import { Colors, GlowConfig, BorderRadius, ComponentSize } from '../common/DesignConstants'
+import { Colors, GlowConfig, BorderRadius, ComponentSize, ThemeColors } from '../common/DesignConstants'
 
 @Component
 export struct HaloToggle {
@@ -17,6 +17,7 @@ export struct HaloToggle {
   @State private isHovered: boolean = false
   @State private isPressed: boolean = false
   @State private thumbOffset: number = 0  // 拖拽偏移量
+  @StorageProp('isDarkMode') isDark: boolean = false
   
   // 开关尺寸
   private readonly WIDTH = ComponentSize.TOGGLE_WIDTH
@@ -34,9 +35,9 @@ export struct HaloToggle {
   // 计算轨道背景色
   private getTrackColor(): string {
     if (this.disabled) {
-      return Colors.TEXT_TERTIARY_LIGHT
+      return ThemeColors.textTertiary(this.isDark)
     }
-    return this.isOn ? Colors.BRAND_PRIMARY : Colors.TEXT_TERTIARY_LIGHT
+    return this.isOn ? Colors.BRAND_PRIMARY : ThemeColors.textTertiary(this.isDark)
   }
   
   // 计算光晕参数
@@ -106,7 +107,7 @@ export struct HaloToggle {
             .backgroundColor('#FFFFFF')
             .shadow({
               radius: this.isPressed ? 10 : 6,
-              color: this.isPressed ? Colors.GLOW_BLUE : '#33000000',
+              color: this.isPressed ? ThemeColors.glowBlue(this.isDark) : '#33000000',
               offsetX: 0,
               offsetY: this.isPressed ? 1 : 2
             })

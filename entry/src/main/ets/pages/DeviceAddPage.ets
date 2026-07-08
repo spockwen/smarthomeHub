@@ -3,21 +3,18 @@
  * 提供扫描附近设备、手动添加、扫码添加、连接第三方平台等功能
  * 基于 HarmonyOS Design 规范实现
  */
-import { Colors, FontSize, FontWeight, Spacing, BorderRadius, ComponentSize, GlowConfig, AnimationCurves } from '../common/DesignConstants'
+import { Colors, FontSize, FontWeight, Spacing, BorderRadius, ComponentSize, GlowConfig, AnimationCurves, ThemeColors } from '../common/DesignConstants'
 import { DeviceCard, DeviceModel } from '../components/DeviceCard'
 import router from '@ohos.router'
 
-// 设备分类
 type DeviceCategory = 'lighting' | 'power' | 'environment' | 'clean' | 'kitchen' | 'health' | 'security' | 'entertainment'
 
-// 分类项接口
 interface CategoryItem {
   id: DeviceCategory
   name: string
   icon: string
 }
 
-// 支持设备接口
 interface SupportedDevice {
   id: string
   name: string
@@ -29,16 +26,11 @@ interface SupportedDevice {
 @Entry
 @Component
 export struct DeviceAddPage {
-  // 搜索关键词
+  @StorageProp('isDarkMode') isDark: boolean = false
   @State private searchKeyword: string = ''
-  
-  // 当前选中的分类
   @State private currentCategory: DeviceCategory = 'lighting'
-  
-  // 是否正在扫描
   @State private isScanning: boolean = true
   
-  // 分类列表
   private readonly categories: CategoryItem[] = [
     { id: 'lighting', name: '照明设备', icon: '💡' },
     { id: 'power', name: '电源开关', icon: '🔌' },
@@ -50,7 +42,6 @@ export struct DeviceAddPage {
     { id: 'entertainment', name: '娱乐影音', icon: '🎮' }
   ]
   
-  // 支持设备列表
   private readonly supportedDevices: SupportedDevice[] = [
     { id: 'router1', name: '中国移动路由器', model: '通用', icon: '📶', category: 'power' },
     { id: 'scale1', name: '香山体脂秤', model: 'IF1123D', icon: '⚖️', category: 'health' },
@@ -66,16 +57,13 @@ export struct DeviceAddPage {
     { id: 'humidifier1', name: '智米加湿器', model: 'CJJSQ01ZM', icon: '💨', category: 'environment' }
   ]
   
-  // 获取过滤后的设备列表
   private getFilteredDevices(): SupportedDevice[] {
     let filtered = this.supportedDevices
     
-    // 按分类过滤
     if (this.currentCategory) {
       filtered = filtered.filter(device => device.category === this.currentCategory)
     }
     
-    // 按搜索关键词过滤
     if (this.searchKeyword.trim() !== '') {
       const keyword = this.searchKeyword.toLowerCase()
       filtered = filtered.filter(device => 
@@ -87,16 +75,13 @@ export struct DeviceAddPage {
     return filtered
   }
   
-  // 开始扫描
   private startScanning() {
     this.isScanning = true
-    // 模拟扫描过程
     setTimeout(() => {
       this.isScanning = false
     }, 3000)
   }
   
-  // 返回上一页
   private goBack() {
     console.log('返回按钮被点击');
     try {
@@ -109,74 +94,57 @@ export struct DeviceAddPage {
     }
   }
   
-  // 处理扫码添加
   private handleScanQR() {
     console.info('扫码添加设备')
-    // TODO: 调用扫码功能
   }
   
-  // 处理连接第三方平台
   private handleConnectPlatform() {
     console.info('连接第三方平台')
-    // TODO: 跳转到第三方平台连接页面
   }
   
-  // 处理设备添加
   private handleAddDevice(device: SupportedDevice) {
     console.info(`添加设备: ${device.name} (${device.model})`)
-    // TODO: 实现设备添加逻辑
   }
   
   build() {
     Column() {
-      // 顶部栏
       this.TopBar()
-      
-      // 扫描状态区
       this.ScanningSection()
-      
-      // 快捷操作区
       this.QuickActions()
-      
-      // 设备分类与支持列表
       this.DeviceListSection()
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Colors.BG_LIGHT)
+    .backgroundColor(ThemeColors.bg(this.isDark))
     .onAppear(() => {
-      // 页面显示时开始扫描
       this.startScanning()
     })
   }
   
-  // 顶部栏
   @Builder TopBar() {
     Row({ space: Spacing.MD }) {
-      // 返回按钮
       Row() {
         Text('←')
           .fontSize(24)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
       }
       .width(40)
       .height(40)
       .borderRadius(BorderRadius.FULL)
-      .backgroundColor(Colors.SURFACE_LIGHT)
+      .backgroundColor(ThemeColors.surface(this.isDark))
       .onClick(() => {
         this.goBack()
       })
       
-      // 搜索框
       TextInput({ placeholder: '搜索设备名称', text: this.searchKeyword })
         .placeholderFont({ size: FontSize.BODY2, weight: FontWeight.REGULAR })
-        .placeholderColor(Colors.TEXT_TERTIARY_LIGHT)
-        .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        .placeholderColor(ThemeColors.textTertiary(this.isDark))
+        .fontColor(ThemeColors.textPrimary(this.isDark))
         .fontSize(FontSize.BODY2)
         .height(40)
         .layoutWeight(1)
         .padding({ left: Spacing.LG, right: Spacing.LG })
-        .backgroundColor(Colors.SURFACE_LIGHT)
+        .backgroundColor(ThemeColors.surface(this.isDark))
         .borderRadius(BorderRadius.MEDIUM)
         .onChange((value: string) => {
           this.searchKeyword = value
@@ -185,14 +153,12 @@ export struct DeviceAddPage {
     .width('100%')
     .height(56)
     .padding({ left: Spacing.LG, right: Spacing.LG })
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 扫描状态区
   @Builder ScanningSection() {
     Column({ space: Spacing.SM }) {
       if (this.isScanning) {
-        // 加载动画
         Row() {
           LoadingProgress()
             .width(40)
@@ -205,10 +171,9 @@ export struct DeviceAddPage {
         
         Text('正在扫描附近设备…')
           .fontSize(FontSize.BODY1)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
           .fontWeight(FontWeight.MEDIUM)
       } else {
-        // 扫描完成状态
         Row({ space: Spacing.SM }) {
           Text('✅')
             .fontSize(24)
@@ -226,19 +191,17 @@ export struct DeviceAddPage {
       
       Text('若找不到设备，可以使用手动添加或扫码识别。')
         .fontSize(FontSize.CAPTION1)
-        .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+        .fontColor(ThemeColors.textSecondary(this.isDark))
         .textAlign(TextAlign.Center)
         .padding({ left: Spacing.XL, right: Spacing.XL })
     }
     .width('100%')
     .padding({ top: Spacing.LG, bottom: Spacing.LG })
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 快捷操作区
   @Builder QuickActions() {
     Row({ space: Spacing.LG }) {
-      // 扫码添加按钮
       Column({ space: Spacing.SM }) {
         Row() {
           Text('📷')
@@ -250,7 +213,7 @@ export struct DeviceAddPage {
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
         .borderRadius(BorderRadius.LARGE)
-        .backgroundColor(Colors.BRAND_PRIMARY + '10') // 6% 透明度
+        .backgroundColor(ThemeColors.selectedBg(this.isDark))
         
         Text('扫码添加')
           .fontSize(FontSize.CAPTION1)
@@ -262,23 +225,22 @@ export struct DeviceAddPage {
         this.handleScanQR()
       })
       
-      // 连接第三方平台按钮
       Column({ space: Spacing.SM }) {
         Row() {
           Text('🔗')
             .fontSize(32)
-            .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+            .fontColor(ThemeColors.textSecondary(this.isDark))
         }
         .width(64)
         .height(64)
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
         .borderRadius(BorderRadius.LARGE)
-        .backgroundColor(Colors.TEXT_SECONDARY_LIGHT + '10') // 6% 透明度
+        .backgroundColor(ThemeColors.selectedBg(this.isDark))
         
         Text('连接第三方平台')
           .fontSize(FontSize.CAPTION1)
-          .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+          .fontColor(ThemeColors.textSecondary(this.isDark))
           .fontWeight(FontWeight.MEDIUM)
           .textAlign(TextAlign.Center)
       }
@@ -289,24 +251,19 @@ export struct DeviceAddPage {
     }
     .width('100%')
     .padding({ left: Spacing.XL, right: Spacing.XL, top: Spacing.LG, bottom: Spacing.LG })
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 设备分类与支持列表
   @Builder DeviceListSection() {
     Row() {
-      // 左侧分类栏
       this.CategorySidebar()
-      
-      // 右侧设备列表
       this.DeviceList()
     }
     .layoutWeight(1)
     .width('100%')
-    .backgroundColor(Colors.BG_LIGHT)
+    .backgroundColor(ThemeColors.bg(this.isDark))
   }
   
-  // 左侧分类栏
   @Builder CategorySidebar() {
     Scroll() {
       Column({ space: Spacing.XS }) {
@@ -317,7 +274,7 @@ export struct DeviceAddPage {
             
             Text(category.name)
               .fontSize(FontSize.CAPTION1)
-              .fontColor(this.currentCategory === category.id ? Colors.BRAND_PRIMARY : Colors.TEXT_SECONDARY_LIGHT)
+              .fontColor(this.currentCategory === category.id ? Colors.BRAND_PRIMARY : ThemeColors.textSecondary(this.isDark))
               .fontWeight(this.currentCategory === category.id ? FontWeight.MEDIUM : FontWeight.REGULAR)
               .textAlign(TextAlign.Center)
               .maxLines(2)
@@ -326,7 +283,7 @@ export struct DeviceAddPage {
           .width(72)
           .padding({ top: Spacing.MD, bottom: Spacing.MD })
           .borderRadius(BorderRadius.MEDIUM)
-          .backgroundColor(this.currentCategory === category.id ? Colors.BRAND_PRIMARY + '15' : Colors.SURFACE_LIGHT)
+          .backgroundColor(this.currentCategory === category.id ? ThemeColors.selectedBg(this.isDark) : ThemeColors.surface(this.isDark))
           .onClick(() => {
             this.currentCategory = category.id
           })
@@ -336,20 +293,18 @@ export struct DeviceAddPage {
     }
     .width(96)
     .scrollBar(BarState.Off)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
   }
   
-  // 右侧设备列表
   @Builder DeviceList() {
     Scroll() {
       Column({ space: Spacing.MD }) {
         Text('最新支持')
           .fontSize(FontSize.TITLE2)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
           .fontWeight(FontWeight.BOLD)
           .padding({ left: Spacing.LG, top: Spacing.LG, bottom: Spacing.SM })
         
-        // 设备网格
         Grid() {
           ForEach(this.getFilteredDevices(), (device: SupportedDevice) => {
             GridItem() {
@@ -368,10 +323,8 @@ export struct DeviceAddPage {
     .scrollBar(BarState.Off)
   }
   
-  // 设备卡片
   @Builder DeviceCard(device: SupportedDevice) {
     Column({ space: Spacing.SM }) {
-      // 设备图片区域
       Row() {
         Text(device.icon)
           .fontSize(32)
@@ -381,20 +334,19 @@ export struct DeviceAddPage {
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .borderRadius(BorderRadius.MEDIUM)
-      .backgroundColor(Colors.BG_LIGHT)
+      .backgroundColor(ThemeColors.bg(this.isDark))
       
-      // 设备信息
       Column({ space: 2 }) {
         Text(device.name)
           .fontSize(FontSize.BODY2)
-          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+          .fontColor(ThemeColors.textPrimary(this.isDark))
           .fontWeight(FontWeight.MEDIUM)
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         
         Text(device.model)
           .fontSize(FontSize.CAPTION1)
-          .fontColor(Colors.TEXT_SECONDARY_LIGHT)
+          .fontColor(ThemeColors.textSecondary(this.isDark))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
@@ -403,7 +355,7 @@ export struct DeviceAddPage {
     }
     .width('100%')
     .borderRadius(BorderRadius.LARGE)
-    .backgroundColor(Colors.SURFACE_LIGHT)
+    .backgroundColor(ThemeColors.surface(this.isDark))
     .padding({ bottom: Spacing.SM })
     .onClick(() => {
       this.handleAddDevice(device)

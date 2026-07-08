@@ -2,7 +2,7 @@
  * 场景卡片组件
  * 实现光感场景触发 + 沉浸激活态视觉反馈
  */
-import { Colors, GlowConfig, BorderRadius, FontSize, Spacing, ComponentSize } from '../common/DesignConstants'
+import { Colors, GlowConfig, BorderRadius, FontSize, Spacing, ComponentSize, ThemeColors } from '../common/DesignConstants'
 
 // 场景数据模型
 export interface SceneModel {
@@ -37,6 +37,7 @@ export struct SceneCard {
   // 内部状态
   @State private isHovered: boolean = false
   @State private isPressed: boolean = false
+  @StorageProp('isDarkMode') isDark: boolean = false
   
   // 计算光晕参数
   private getGlowParams(): GlowParams {
@@ -108,7 +109,7 @@ export struct SceneCard {
         Text(this.scene.name)
           .fontSize(FontSize.BODY1)
           .fontWeight(500)
-          .fontColor(this.scene.isActive ? '#FFFFFF' : Colors.TEXT_SECONDARY_LIGHT)
+          .fontColor(this.scene.isActive ? '#FFFFFF' : ThemeColors.textSecondary(this.isDark))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         
@@ -116,7 +117,7 @@ export struct SceneCard {
         if (this.scene.deviceCount > 0) {
           Text(`${this.scene.deviceCount}个设备`)
             .fontSize(FontSize.CAPTION1)
-            .fontColor(this.scene.isActive ? 'rgba(255, 255, 255, 0.8)' : Colors.TEXT_TERTIARY_LIGHT)
+            .fontColor(this.scene.isActive ? 'rgba(255, 255, 255, 0.8)' : ThemeColors.textTertiary(this.isDark))
         }
       }
       .width('100%')
@@ -124,7 +125,7 @@ export struct SceneCard {
       .justifyContent(FlexAlign.Center)
       .padding(Spacing.LG)
       .borderRadius(BorderRadius.LARGE)
-      .backgroundColor(this.scene.isActive ? this.scene.color : 'rgba(255, 255, 255, 0.7)')
+      .backgroundColor(this.scene.isActive ? this.scene.color : ThemeColors.cardBg(this.isDark))
       // 毛玻璃效果（未激活时）
       .backgroundBlurStyle(
         this.scene.isActive ? BlurStyle.NONE : BlurStyle.Thin,
@@ -141,7 +142,7 @@ export struct SceneCard {
       // 阴影效果（offsetY保持不变，避免按下时卡片视觉下移）
       .shadow({
         radius: this.scene.isActive ? 20 : 8,
-        color: this.scene.isActive ? this.scene.color + '60' : '#1A000000',  // 37.5% 透明度
+        color: this.scene.isActive ? this.scene.color + '60' : ThemeColors.cardShadow(this.isDark),  // 37.5% 透明度
         offsetX: 0,
         offsetY: 8
       })

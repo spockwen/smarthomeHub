@@ -9,6 +9,7 @@
     "pages/TemperaturePage",
     "pages/HumidityPage",
     "pages/PowerUsagePage",
-    "pages/OnlineDevicesPage"
+    "pages/OnlineDevicesPage",
+    "pages/ThemeSettingsPage"
   ]
 }
