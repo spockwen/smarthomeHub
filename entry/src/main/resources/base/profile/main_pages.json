@@ -10,6 +10,8 @@
     "pages/HumidityPage",
     "pages/PowerUsagePage",
     "pages/OnlineDevicesPage",
-    "pages/ThemeSettingsPage"
+    "pages/ThemeSettingsPage",
+    "pages/DoorLockPage",
+    "pages/LightingPage"
   ]
 }

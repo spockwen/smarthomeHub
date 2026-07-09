@@ -95,7 +95,10 @@ export struct DevicePage {
     Column() {
       // 顶部标题栏
       this.TitleBar()
-      
+
+      // 智能照明中心入口（人体感应 + IFTTT 联动）
+      this.LightingCenterEntry()
+
       // 分类筛选
       this.CategoryFilter()
       
@@ -106,8 +109,13 @@ export struct DevicePage {
             DeviceCard({
               device: device,
               onTap: () => {
-                // TODO: 跳转到设备详情页
-                console.info(`Navigate to device detail: ${device.id}`)
+                // 门锁设备：跳转到远程开锁专用页（带二次确认 + 日志审计）
+                if (device.id === 'door') {
+                  router.pushUrl({ url: 'pages/DoorLockPage' })
+                } else {
+                  // TODO: 跳转到设备详情页
+                  console.info(`Navigate to device detail: ${device.id}`)
+                }
               },
               onToggle: (isOn: boolean) => {
                 // 直接更新全局状态
@@ -157,6 +165,47 @@ export struct DevicePage {
     .backgroundColor(ThemeColors.bg(this.isDark))
   }
   
+  // 智能照明中心入口横幅（跳转到 LightingPage）
+  @Builder LightingCenterEntry() {
+    Row() {
+      Row({ space: 12 }) {
+        Text('💡')
+          .fontSize(28)
+        Column() {
+          Text('智能照明中心')
+            .fontSize(15)
+            .fontWeight(600)
+            .fontColor(ThemeColors.textPrimary(this.isDark))
+          Text('人体感应 · IFTTT 联动 · 模拟触发')
+            .fontSize(11)
+            .fontColor(ThemeColors.textSecondary(this.isDark))
+            .margin({ top: 2 })
+        }
+        .alignItems(HorizontalAlign.Start)
+        .layoutWeight(1)
+
+        Text('›')
+          .fontSize(22)
+          .fontColor(ThemeColors.textSecondary(this.isDark))
+      }
+      .width('100%')
+      .padding({ left: 16, right: 16, top: 14, bottom: 14 })
+      .backgroundColor(ThemeColors.surface(this.isDark))
+      .borderRadius(BorderRadius.MEDIUM)
+      .border({
+        width: 1,
+        color: ThemeColors.divider(this.isDark)
+      })
+      .onClick(() => {
+        router.pushUrl({ url: 'pages/LightingPage' }).catch((err: Error) => {
+          console.error('LightingPage navigation failed:', err.message)
+        })
+      })
+    }
+    .width('100%')
+    .padding({ left: Spacing.LG, right: Spacing.LG, top: Spacing.MD, bottom: Spacing.MD })
+  }
+
   // 标题栏
   @Builder TitleBar() {
     Row() {

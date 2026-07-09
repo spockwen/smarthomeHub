@@ -1,0 +1,780 @@
+=== Build Output ===
+> E:/harmonyos/DevEco Studio\tools\node\node.exe E:/harmonyos/DevEco Studio\tools\hvigor\bin\hvigorw.js --mode project -p product=default assembleApp -p buildMode=debug --no-daemon
+
+> hvigor Finished ::PreBuildApp... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@PreBuild...  
+> hvigor Finished ::DuplicateDependencyCheck... after 1 ms 
+> hvigor Finished :entry:default@CreateModuleInfo... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@GenerateMetadata...  
+> hvigor Finished :entry:default@ConfigureCmake... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@MergeProfile...  
+> hvigor UP-TO-DATE :entry:default@CreateBuildProfile...  
+> hvigor Finished :entry:default@PreCheckSyscap... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@GeneratePkgContextInfo...  
+> hvigor Finished :entry:default@GeneratePkgSdkInfo... after 3 ms 
+> hvigor Finished :entry:default@ProcessIntegratedHsp... after 1 ms 
+> hvigor Finished :entry:default@BuildNativeWithCmake... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@MakePackInfo...  
+> hvigor Finished :entry:default@SyscapTransform... after 11 ms 
+> hvigor UP-TO-DATE :entry:default@ProcessProfile...  
+> hvigor UP-TO-DATE :entry:default@ProcessRouterMap...  
+> hvigor UP-TO-DATE :entry:default@ProcessShareConfig...  
+> hvigor Finished :entry:default@ProcessStartupConfig... after 2 ms 
+> hvigor Finished :entry:default@BuildNativeWithNinja... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@ProcessResource...  
+> hvigor UP-TO-DATE :entry:default@GenerateLoaderJson...  
+> hvigor UP-TO-DATE :entry:default@ProcessLibs...  
+> hvigor UP-TO-DATE :entry:default@CompileResource...  
+> hvigor UP-TO-DATE :entry:default@DoNativeStrip...  
+> hvigor Finished :entry:default@BuildJS... after 3 ms 
+> hvigor UP-TO-DATE :entry:default@CacheNativeLibs...  
+> hvigor ERROR: Failed :entry:default@CompileArkTS... 
+> hvigor WARN: 
+1 WARN: ArkTS:WARN: For details about ArkTS syntax errors, see FAQs
+2 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/entryability/EntryAbility.ets:9:5
+ Function may throw exceptions. Special handling is required.
+
+3 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/HomePage.ets:187:17
+ 'show' has been deprecated.
+
+4 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/HomePage.ets:310:16
+ 'pushUrl' has been deprecated.
+
+5 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/HomePage.ets:315:16
+ 'pushUrl' has been deprecated.
+
+6 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/HomePage.ets:320:16
+ 'pushUrl' has been deprecated.
+
+7 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/HomePage.ets:325:16
+ 'pushUrl' has been deprecated.
+
+8 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DevicePage.ets:114:26
+ 'pushUrl' has been deprecated.
+
+9 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DevicePage.ets:200:16
+ 'pushUrl' has been deprecated.
+
+10 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DevicePage.ets:233:16
+ 'pushUrl' has been deprecated.
+
+11 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ScenePage.ets:119:18
+ 'pushUrl' has been deprecated.
+
+12 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ScenePage.ets:186:20
+ 'pushUrl' has been deprecated.
+
+13 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ScenePage.ets:228:16
+ 'pushUrl' has been deprecated.
+
+14 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ScenePage.ets:349:14
+ 'pushUrl' has been deprecated.
+
+15 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/AIChatPage.ets:256:25
+ 'show' has been deprecated.
+
+16 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ProfilePage.ets:243:9
+ Function may throw exceptions. Special handling is required.
+
+17 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ProfilePage.ets:243:16
+ 'pushUrl' has been deprecated.
+
+18 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ProfilePage.ets:246:9
+ Function may throw exceptions. Special handling is required.
+
+19 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ProfilePage.ets:246:16
+ 'pushUrl' has been deprecated.
+
+20 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ProfilePage.ets:249:21
+ 'show' has been deprecated.
+
+21 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/StorePage.ets:132:16
+ 'pushUrl' has been deprecated.
+
+22 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/StorePage.ets:329:7
+ Function may throw exceptions. Special handling is required.
+
+23 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/StorePage.ets:329:14
+ 'showToast' has been deprecated.
+
+24 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/StorePage.ets:331:7
+ Function may throw exceptions. Special handling is required.
+
+25 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/StorePage.ets:331:14
+ 'showToast' has been deprecated.
+
+26 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/StorePage.ets:336:5
+ Function may throw exceptions. Special handling is required.
+
+27 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/StorePage.ets:336:12
+ 'showToast' has been deprecated.
+
+28 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:105:7
+ Function may throw exceptions. Special handling is required.
+
+29 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:105:14
+ 'showToast' has been deprecated.
+
+30 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:122:5
+ Function may throw exceptions. Special handling is required.
+
+31 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:122:12
+ 'showToast' has been deprecated.
+
+32 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:129:5
+ Function may throw exceptions. Special handling is required.
+
+33 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:129:12
+ 'showToast' has been deprecated.
+
+34 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:134:7
+ Function may throw exceptions. Special handling is required.
+
+35 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:134:14
+ 'showToast' has been deprecated.
+
+36 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:139:7
+ Function may throw exceptions. Special handling is required.
+
+37 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:139:14
+ 'showToast' has been deprecated.
+
+38 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:144:7
+ Function may throw exceptions. Special handling is required.
+
+39 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:144:14
+ 'showToast' has been deprecated.
+
+40 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:149:7
+ Function may throw exceptions. Special handling is required.
+
+41 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:149:14
+ 'showToast' has been deprecated.
+
+42 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:153:5
+ Function may throw exceptions. Special handling is required.
+
+43 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:153:12
+ 'showToast' has been deprecated.
+
+44 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:172:20
+ 'back' has been deprecated.
+
+45 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/CartPage.ets:221:24
+ 'back' has been deprecated.
+
+46 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DeviceAddPage.ets:88:14
+ 'back' has been deprecated.
+
+47 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DeviceAddPage.ets:91:7
+ Function may throw exceptions. Special handling is required.
+
+48 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DeviceAddPage.ets:91:14
+ 'pushUrl' has been deprecated.
+
+49 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneDetailPage.ets:267:27
+ 'getParams' has been deprecated.
+
+50 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneDetailPage.ets:287:14
+ 'back' has been deprecated.
+
+51 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneDetailPage.ets:290:7
+ Function may throw exceptions. Special handling is required.
+
+52 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneDetailPage.ets:290:14
+ 'pushUrl' has been deprecated.
+
+53 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneDetailPage.ets:348:5
+ Function may throw exceptions. Special handling is required.
+
+54 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneDetailPage.ets:348:12
+ 'pushUrl' has been deprecated.
+
+55 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneDetailPage.ets:362:12
+ 'back' has been deprecated.
+
+56 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneCreatePage.ets:58:27
+ 'getParams' has been deprecated.
+
+57 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneCreatePage.ets:89:12
+ 'back' has been deprecated.
+
+58 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/SceneCreatePage.ets:129:12
+ 'back' has been deprecated.
+
+59 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:336:14
+ 'back' has been deprecated.
+
+60 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/HumidityPage.ets:46:18
+ 'back' has been deprecated.
+
+61 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/PowerUsagePage.ets:52:18
+ 'back' has been deprecated.
+
+62 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/OnlineDevicesPage.ets:58:18
+ 'back' has been deprecated.
+
+63 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/ThemeSettingsPage.ets:35:20
+ 'back' has been deprecated.
+
+64 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:72:12
+ 'back' has been deprecated.
+
+65 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:80:7
+ Function may throw exceptions. Special handling is required.
+
+66 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:80:20
+ 'showToast' has been deprecated.
+
+67 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:103:20
+ 'showToast' has been deprecated.
+
+68 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:106:7
+ Function may throw exceptions. Special handling is required.
+
+69 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:106:20
+ 'showToast' has been deprecated.
+
+70 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:117:7
+ Function may throw exceptions. Special handling is required.
+
+71 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:117:20
+ 'showToast' has been deprecated.
+
+72 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:125:5
+ Function may throw exceptions. Special handling is required.
+
+73 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:125:18
+ 'showToast' has been deprecated.
+
+74 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:136:5
+ Function may throw exceptions. Special handling is required.
+
+75 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:136:18
+ 'showToast' has been deprecated.
+
+76 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:308:24
+ 'showToast' has been deprecated.
+
+77 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/LightingPage.ets:62:12
+ 'back' has been deprecated.
+
+78 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/LightingPage.ets:67:5
+ Function may throw exceptions. Special handling is required.
+
+79 WARN: ArkTS:WARN File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/LightingPage.ets:67:18
+ 'showToast' has been deprecated.
+
+> hvigor ERROR: ArkTS Compiler Error
+1 ERROR: 10605040 ArkTS Compiler Error
+Error Message: Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/GatewayService.ets:163:24
+
+
+2 ERROR: 10605008 ArkTS Compiler Error
+Error Message: Use explicit types instead of "any", "unknown" (arkts-no-any-unknown) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/GatewayService.ets:314:18
+
+
+3 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/GatewayService.ets:404:19
+
+
+4 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:232:28
+
+
+5 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:239:29
+
+
+6 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:256:28
+
+
+7 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:263:29
+
+
+8 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:373:17
+
+
+9 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:374:17
+
+
+10 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:378:17
+
+
+11 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:379:17
+
+
+12 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:386:12
+
+
+13 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:390:12
+
+
+14 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:498:17
+
+
+15 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:498:61
+
+
+16 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:529:21
+
+
+17 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:529:71
+
+
+18 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:529:112
+
+
+19 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:547:47
+
+
+20 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:633:20
+
+
+21 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:636:68
+
+
+22 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:637:20
+
+
+23 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:645:56
+
+
+24 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:683:36
+
+
+25 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:693:18
+
+
+26 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:697:18
+
+
+27 ERROR: 10605008 ArkTS Compiler Error
+Error Message: Use explicit types instead of "any", "unknown" (arkts-no-any-unknown) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:846:16
+
+
+28 ERROR: 10605029 ArkTS Compiler Error
+Error Message: Indexed access is not supported for fields (arkts-no-props-by-index) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/TemperaturePage.ets:987:24
+
+
+29 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:212:26
+
+
+30 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:223:9
+
+
+31 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Conversion of type 'ClimateEventPayload' to type 'Record<string, string | number | boolean>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'ClimateEventPayload'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/ClimateService.ets:114:16
+
+
+32 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Conversion of type 'ClimateEventPayload' to type 'Record<string, string | number | boolean>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'ClimateEventPayload'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/ClimateService.ets:149:16
+
+
+33 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Conversion of type 'ClimateEventPayload' to type 'Record<string, string | number | boolean>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'ClimateEventPayload'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/ClimateService.ets:184:16
+
+
+34 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Conversion of type 'ClimateEventPayload' to type 'Record<string, string | number | boolean>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'ClimateEventPayload'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/ClimateService.ets:220:16
+
+
+35 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Conversion of type 'LockEventPayload' to type 'Record<string, string | number | boolean>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'LockEventPayload'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/DoorLockService.ets:137:16
+
+
+36 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Conversion of type 'LockEventPayload' to type 'Record<string, string | number | boolean>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'LockEventPayload'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/DoorLockService.ets:180:16
+
+
+37 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Type 'Record<string, Object>' is not assignable to type 'Record<string, string | number | boolean>'.
+  'string' index signatures are incompatible.
+    Type 'Object' is not assignable to type 'string | number | boolean'.
+      The 'Object' type is assignable to very few other types. Did you mean to use the 'any' type instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/services/GatewayService.ets:404:11
+
+
+38 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'success' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:180:22
+
+
+39 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'danger' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:182:22
+
+
+40 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:184:22
+
+
+41 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:186:22
+
+
+42 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'bg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.bg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:243:41
+
+
+43 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:293:26
+
+
+44 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:299:26
+
+
+45 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'accent' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:304:26
+
+
+46 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'cardBg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.cardBg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:314:28
+
+
+47 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'warning' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:329:55
+
+
+48 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'danger' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:330:56
+
+
+49 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'success' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:330:71
+
+
+50 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textSecondary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textSecondary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:336:26
+
+
+51 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'small' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:341:30
+
+
+52 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:342:28
+
+
+53 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'small' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:344:30
+
+
+54 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:345:28
+
+
+55 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'small' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:347:30
+
+
+56 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:348:28
+
+
+57 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'cardBg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.cardBg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:353:28
+
+
+58 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'lg' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:354:32
+
+
+59 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'accent' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:367:26
+
+
+60 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textSecondary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textSecondary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:370:30
+
+
+61 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'subtitle' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:378:30
+
+
+62 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'accent' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:380:34
+
+
+63 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'md' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:381:38
+
+
+64 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'subtitle' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:387:30
+
+
+65 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'success' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:389:34
+
+
+66 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'md' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:390:38
+
+
+67 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'cardBg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.cardBg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:396:28
+
+
+68 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'lg' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:397:32
+
+
+69 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'subtitle' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:407:30
+
+
+70 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:409:28
+
+
+71 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'tiny' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:412:30
+
+
+72 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:413:28
+
+
+73 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:421:28
+
+
+74 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:430:36
+
+
+75 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'small' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:433:38
+
+
+76 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'success' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:434:48
+
+
+77 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:434:64
+
+
+78 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'tiny' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:437:36
+
+
+79 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textSecondary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textSecondary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:438:34
+
+
+80 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'small' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:446:36
+
+
+81 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'accent' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:447:34
+
+
+82 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'tiny' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:450:36
+
+
+83 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:451:34
+
+
+84 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'border' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:459:60
+
+
+85 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'cardBg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.cardBg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:465:28
+
+
+86 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'lg' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:466:32
+
+
+87 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'subtitle' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:488:30
+
+
+88 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:490:28
+
+
+89 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'small' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:493:30
+
+
+90 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'danger' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:494:28
+
+
+91 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:505:28
+
+
+92 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'small' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:511:34
+
+
+93 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textMuted' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:512:32
+
+
+94 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:516:32
+
+
+95 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'tiny' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:519:34
+
+
+96 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textSecondary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textSecondary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:520:32
+
+
+97 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'xs' does not exist on type 'typeof Spacing'. Did you mean 'XS'? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:521:40
+
+
+98 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'small' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:523:34
+
+
+99 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'xs' does not exist on type 'typeof Spacing'. Did you mean 'XS'? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:528:35
+
+
+100 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'xs' does not exist on type 'typeof Spacing'. Did you mean 'XS'? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:528:55
+
+
+101 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'cardBg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.cardBg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:534:28
+
+
+102 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'lg' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:535:32
+
+
+103 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'subtitle' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:544:30
+
+
+104 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:546:28
+
+
+105 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textSecondary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textSecondary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:551:28
+
+
+106 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'bg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.bg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:559:36
+
+
+107 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:560:30
+
+
+108 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'md' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:561:40
+
+
+109 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'accent' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:567:36
+
+
+110 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'md' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:569:40
+
+
+111 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'cardBg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.cardBg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:577:30
+
+
+112 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'lg' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:578:34
+
+
+113 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'subtitle' does not exist on type 'typeof FontSize'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:592:30
+
+
+114 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:594:28
+
+
+115 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textSecondary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textSecondary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:599:28
+
+
+116 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'bg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.bg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:607:36
+
+
+117 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'textPrimary' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.textPrimary' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:608:30
+
+
+118 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'md' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:609:40
+
+
+119 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'danger' does not exist on type 'ThemeColors'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:615:36
+
+
+120 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'md' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:617:40
+
+
+121 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'cardBg' does not exist on type 'ThemeColors'. Did you mean to access the static member 'ThemeColors.cardBg' instead? At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:625:30
+
+
+122 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'lg' does not exist on type 'typeof BorderRadius'. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:626:34
+
+
+123 ERROR: 10905209 ArkTS Compiler Error
+Error Message: Only UI component syntax can be written here. At File: E:/harmonyos/SmartHomeAIHub/entry/src/main/ets/pages/DoorLockPage.ets:501:7
+
+
+COMPILE RESULT:FAIL {ERROR:124 WARN:79}
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --debug option to get more log output.
+
+> hvigor ERROR: BUILD FAILED in 13 s 330 ms 
+
+
+Process finished with exit code -1
+
