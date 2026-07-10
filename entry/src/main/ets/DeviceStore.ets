@@ -3,6 +3,7 @@
  * 所有页面通过 @StorageLink 自动同步状态变化
  */
 import { ConfigurationConstant } from '@kit.AbilityKit'
+import { ClimateService } from './services/ClimateService'
 
 export class DeviceStore {
   static initialize(): void {
@@ -30,6 +31,14 @@ export class DeviceStore {
     AppStorage.setOrCreate('themeMode', 'follow-system')
     AppStorage.setOrCreate('isDarkMode', false)
     AppStorage.setOrCreate('systemColorMode', ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT)
+
+    // Sync airOn with ClimateService power state
+    try {
+      const cs = ClimateService.getState()
+      AppStorage.setOrCreate('airOn', cs.power)
+    } catch (e) {
+      AppStorage.setOrCreate('airOn', true)
+    }
   }
 
   static setThemeMode(mode: string): void {
@@ -72,6 +81,7 @@ export class DeviceStore {
 
   static setAirOn(value: boolean): void {
     AppStorage.set('airOn', value)
+    ClimateService.setPower(value, 'system')
   }
 
   static setHeaterOn(value: boolean): void {

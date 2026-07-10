@@ -222,7 +222,7 @@ export struct CartPage {
               })
           }
           .width('100%')
-          .height('100%')
+          .layoutWeight(1)
           .justifyContent(FlexAlign.Center)
           .alignItems(HorizontalAlign.Center)
         } else {
@@ -252,9 +252,6 @@ export struct CartPage {
             }
             .alignItems(VerticalAlign.Center)
 
-            Blank()
-              .layoutWeight(1)
-
             Column() {
               Text('合计')
                 .fontSize(14)
@@ -266,9 +263,8 @@ export struct CartPage {
                 .fontColor(Colors.ERROR)
             }
             .alignItems(HorizontalAlign.Start)
-
-            Blank()
-              .layoutWeight(1)
+            .layoutWeight(1)
+            .margin({ left: Spacing.LG })
 
             Button('去结算')
               .fontSize(16)
@@ -282,7 +278,7 @@ export struct CartPage {
               })
           }
           .width('100%')
-          .padding(Spacing.LG)
+          .padding({ left: Spacing.LG, right: Spacing.LG, top: Spacing.MD, bottom: Spacing.MD })
           .backgroundColor(ThemeColors.surface(this.isDark))
           .shadow({
             radius: 8,
@@ -292,7 +288,7 @@ export struct CartPage {
         }
       }
       .width('100%')
-      .height('100%')
+      .layoutWeight(1)
       .backgroundColor(ThemeColors.bg(this.isDark))
     }
     .width('100%')

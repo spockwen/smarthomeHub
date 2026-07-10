@@ -31,7 +31,10 @@ import {
   ClimateMode,
   FanSpeed,
   ThermostatState,
-  ClimateLogEntry
+  ClimateLogEntry,
+  AdapterBrand,
+  ACAdapterFactory,
+  IAirConditioner
 } from '../models/ClimateModel'
 import { ClimateService } from '../services/ClimateService'
 import { GatewayService } from '../services/GatewayService'
@@ -108,6 +111,7 @@ function actionLabel(action: string): string {
     case 'mode': return '模式'
     case 'fanSpeed': return '风速'
     case 'targetTemp': return '目标温度'
+    case 'adapter': return '品牌协议'
     default: return action
   }
 }
@@ -246,6 +250,10 @@ struct TemperaturePage {
       this.showToast(`已是 ${modeLabel(mode)} 模式`)
       return
     }
+    if (!this.getCurrentAdapter().supportedModes.includes(mode)) {
+      this.showToast('当前品牌不支持此模式')
+      return
+    }
     this.isBusy = true
     try {
       const next = ClimateService.setMode(mode, this.operator)
@@ -270,6 +278,10 @@ struct TemperaturePage {
       this.showToast(`已是 ${fanLabel(speed)} 风`)
       return
     }
+    if (!this.getCurrentAdapter().supportedFanSpeeds.includes(speed)) {
+      this.showToast('当前品牌不支持此风速')
+      return
+    }
     this.isBusy = true
     try {
       const next = ClimateService.setFanSpeed(speed, this.operator)
@@ -290,9 +302,12 @@ struct TemperaturePage {
       this.showToast('请先开启空调')
       return
     }
+    const adapter = this.getCurrentAdapter()
     const newTemp = this.state.targetTemp + delta
-    if (newTemp < TEMP_MIN || newTemp > TEMP_MAX) {
-      this.showToast(`温度范围：${TEMP_MIN}-${TEMP_MAX}℃`)
+    const min = adapter.getTempMin(this.state.mode)
+    const max = adapter.getTempMax(this.state.mode)
+    if (newTemp < min || newTemp > max) {
+      this.showToast(`温度范围：${min}-${max}℃`)
       return
     }
     this.isBusy = true
@@ -351,6 +366,37 @@ struct TemperaturePage {
     } catch (e) {
       console.warn(TAG, `router.back failed: ${JSON.stringify(e)}`)
     }
+  }
+
+  getCurrentAdapter(): IAirConditioner {
+    return ACAdapterFactory.getAdapter(this.state.adapter)
+  }
+
+  onSwitchAdapter(brand: AdapterBrand) {
+    if (this.isBusy) return
+    if (this.state.adapter === brand) {
+      this.showToast('已是当前品牌')
+      return
+    }
+    this.isBusy = true
+    try {
+      const next = ClimateService.switchAdapter(brand, this.operator)
+      this.state = next
+      this.showToast(`已切换至${this.getCurrentAdapter().brandName}协议`)
+      this.refreshAll()
+    } catch (e) {
+      console.error(TAG, `switchAdapter failed: ${JSON.stringify(e)}`)
+      this.showToast('切换失败')
+    } finally {
+      this.isBusy = false
+    }
+  }
+
+  adapterBrandIcon(brand: AdapterBrand): string {
+    if (brand === 'gree') return '🌿'
+    if (brand === 'midea') return '🦋'
+    if (brand === 'haier') return '🌊'
+    return '📦'
   }
 
   // =============== 辅助函数 ===============
@@ -425,6 +471,7 @@ struct TemperaturePage {
         Scroll() {
           Column() {
             this.renderHeaderCard()
+            this.renderAdapterSection()
             this.renderTempCard()
             this.renderModeSection()
             this.renderFanSection()
@@ -540,7 +587,7 @@ struct TemperaturePage {
             }
             .margin({ top: '12vp' })
 
-            Text(`${modeGlyph(this.state.mode)} ${this.state.power ? modeLabel(this.state.mode) : '待机'} · ${fanLabel(this.state.fanSpeed)}风 · ${this.state.room}`)
+            Text(`${modeGlyph(this.state.mode)} ${this.state.power ? modeLabel(this.state.mode) : '待机'} · ${fanLabel(this.state.fanSpeed)}风 · ${this.state.room} · ${this.getCurrentAdapter().brandName}`)
               .fontSize('12fp')
               .fontColor('#99000000')
               .margin({ top: '8vp' })
@@ -574,6 +621,52 @@ struct TemperaturePage {
     .margin({ top: '12vp' })
   }
 
+  // ---------- 品牌适配器选择 ----------
+  @Builder
+  renderAdapterSection() {
+    Column() {
+      Row() {
+        Text('设备品牌')
+          .fontSize('14fp')
+          .fontWeight(FontWeight.Medium)
+          .fontColor(Colors.TEXT_PRIMARY_LIGHT)
+        Blank()
+        Text(this.getCurrentAdapter().brandName + '协议')
+          .fontSize('12fp')
+          .fontColor(Colors.BRAND_PRIMARY)
+      }
+      .width('100%')
+      .padding({ left: '16vp', right: '16vp', top: '12vp', bottom: '8vp' })
+
+      Row() {
+        ForEach(ACAdapterFactory.getAllAdapters(), (adapter: IAirConditioner) => {
+          Column() {
+            Text(this.adapterBrandIcon(adapter.brand))
+              .fontSize('24fp')
+            Text(adapter.brandName)
+              .fontSize('12fp')
+              .fontColor(this.state.adapter === adapter.brand ? '#FFFFFFFF' : '#CC000000')
+              .margin({ top: '4vp' })
+          }
+          .layoutWeight(1)
+          .height('72vp')
+          .borderRadius('14vp')
+          .backgroundColor(this.state.adapter === adapter.brand ? Colors.BRAND_PRIMARY : '#F5F5F7')
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
+          .margin({ right: '8vp' })
+          .onClick(() => this.onSwitchAdapter(adapter.brand))
+        }, (adapter: IAirConditioner) => adapter.brand)
+      }
+      .width('100%')
+      .padding({ left: '16vp', right: '16vp', bottom: '16vp' })
+    }
+    .width('100%')
+    .borderRadius('16vp')
+    .backgroundColor('#FFFFFFFF')
+    .margin({ top: '12vp' })
+  }
+
   // ---------- 温度步进 ----------
   @Builder
   renderTempCard() {
@@ -597,7 +690,7 @@ struct TemperaturePage {
           .fontWeight(FontWeight.Bold)
           .fontColor(Colors.TEXT_PRIMARY_LIGHT)
           .margin({ top: '2vp' })
-        Text(`范围 ${TEMP_MIN}-${TEMP_MAX}℃`)
+        Text(`范围 ${this.getCurrentAdapter().getTempMin(this.state.mode)}-${this.getCurrentAdapter().getTempMax(this.state.mode)}℃`)
           .fontSize('11fp')
           .fontColor('#66000000')
           .margin({ top: '2vp' })
@@ -677,7 +770,7 @@ struct TemperaturePage {
   }
 
   modeList(): ClimateMode[] {
-    return ['cool', 'heat', 'auto', 'eco', 'sleep', 'fan']
+    return this.getCurrentAdapter().supportedModes
   }
 
   isModeActive(m: ClimateMode): boolean {
@@ -733,7 +826,7 @@ struct TemperaturePage {
   }
 
   fanList(): FanSpeed[] {
-    return ['auto', 'low', 'mid', 'high']
+    return this.getCurrentAdapter().supportedFanSpeeds
   }
 
   isFanActive(f: FanSpeed): boolean {

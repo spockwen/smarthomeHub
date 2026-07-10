@@ -12,6 +12,15 @@
     "pages/OnlineDevicesPage",
     "pages/ThemeSettingsPage",
     "pages/DoorLockPage",
-    "pages/LightingPage"
+    "pages/LightingPage",
+    "pages/ProductDetailPage",
+    "pages/FamilyManagementPage",
+    "pages/MyDevicesPage",
+    "pages/EnergyStatsPage",
+    "pages/SecurityCenterPage",
+    "pages/NotificationPage",
+    "pages/VoiceAssistantPage",
+    "pages/HelpFeedbackPage",
+    "pages/AboutPage"
   ]
 }

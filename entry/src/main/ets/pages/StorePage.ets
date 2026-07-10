@@ -333,6 +333,6 @@ export struct StorePage {
   }
 
   showProductDetail(product: Product) {
-    prompt.showToast({ message: `查看 ${product.name} 详情` })
+    router.pushUrl({ url: 'pages/ProductDetailPage', params: { productId: product.id } })
   }
 }

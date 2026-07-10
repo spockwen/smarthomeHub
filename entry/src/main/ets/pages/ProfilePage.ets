@@ -245,20 +245,32 @@ export struct ProfilePage {
       case 'store':
         router.pushUrl({ url: 'pages/StorePage' })
         break
+      case 'family':
+        router.pushUrl({ url: 'pages/FamilyManagementPage' })
+        break
+      case 'devices':
+        router.pushUrl({ url: 'pages/MyDevicesPage' })
+        break
+      case 'energy':
+        router.pushUrl({ url: 'pages/EnergyStatsPage' })
+        break
+      case 'security':
+        router.pushUrl({ url: 'pages/SecurityCenterPage' })
+        break
+      case 'notification':
+        router.pushUrl({ url: 'pages/NotificationPage' })
+        break
+      case 'voice':
+        router.pushUrl({ url: 'pages/VoiceAssistantPage' })
+        break
+      case 'help':
+        router.pushUrl({ url: 'pages/HelpFeedbackPage' })
+        break
+      case 'about':
+        router.pushUrl({ url: 'pages/AboutPage' })
+        break
       default:
-        AlertDialog.show({
-          title: id === 'family' ? '家庭管理' :
-                 id === 'devices' ? '我的设备' :
-                 id === 'energy' ? '能耗统计' :
-                 id === 'security' ? '安全中心' :
-                 id === 'about' ? '鸿蒙智家 AI Hub' : '提示',
-          message: id === 'family' ? '当前家庭：默认家庭\n成员数量：1\n该功能正在开发中' :
-                   id === 'devices' ? '当前已接入设备：12台\n包括灯光、空调、门锁、窗帘、插座等设备' :
-                   id === 'energy' ? '今日能耗：8.5kWh\n本周能耗：62.3kWh\n本月能耗：245.8kWh' :
-                   id === 'security' ? '传输加密：TLS\n数据加密：AES\n设备状态：安全' :
-                   id === 'about' ? '基于 OpenHarmony 的 AI 全屋智能控制平台\n\n版本：v1.0.0\n\n软件杯参赛项目' :
-                   `${id} 功能开发中`
-        })
+        break
     }
   }
 }
