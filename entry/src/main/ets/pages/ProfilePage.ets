@@ -11,15 +11,77 @@ interface SettingItem {
   badge?: string
 }
 
+@CustomDialog
+struct EditNameDialog {
+  controller: CustomDialogController
+  @State inputText: string = ''
+  onConfirm?: (name: string) => void
+
+  build() {
+    Column({ space: Spacing.LG }) {
+      Text('修改队名')
+        .fontSize(FontSize.TITLE3)
+        .fontWeight(600)
+        .fontColor(ThemeColors.textPrimary(false))
+
+      TextInput({ text: this.inputText, placeholder: '请输入队名' })
+        .fontSize(FontSize.BODY1)
+        .width('100%')
+        .onChange((value: string) => {
+          this.inputText = value
+        })
+
+      Row({ space: Spacing.MD }) {
+        Button('取消')
+          .fontSize(FontSize.BODY1)
+          .fontColor(ThemeColors.textSecondary(false))
+          .backgroundColor('#F0F0F0')
+          .layoutWeight(1)
+          .onClick(() => {
+            this.controller.close()
+          })
+
+        Button('确定')
+          .fontSize(FontSize.BODY1)
+          .fontColor('#FFFFFF')
+          .backgroundColor(Colors.BRAND_PRIMARY)
+          .layoutWeight(1)
+          .onClick(() => {
+            if (this.inputText.trim().length > 0 && this.onConfirm) {
+              this.onConfirm(this.inputText.trim())
+            }
+            this.controller.close()
+          })
+      }
+      .width('100%')
+    }
+    .padding(Spacing.XL)
+    .borderRadius(BorderRadius.LARGE)
+    .backgroundColor('#FFFFFF')
+  }
+}
+
 @Component
 export struct ProfilePage {
   @StorageProp('isDarkMode') isDark: boolean = false
 
-  @State private userName: string = '软件杯参赛队'
+  @State private userName: string = '代码诗人队'
   @State private avatar: string = '👤'
   @State private familyCount: number = 1
   @State private deviceCount: number = 12
   @State private sceneCount: number = 5
+
+  private editNameDialogController: CustomDialogController = new CustomDialogController({
+    builder: EditNameDialog({
+      inputText: this.userName,
+      onConfirm: (name: string) => {
+        this.userName = name
+      }
+    }),
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    customStyle: true
+  })
 
   private readonly settings: SettingItem[] = [
     { id: 'family', icon: '🏠', title: '家庭管理', subtitle: '默认家庭', showArrow: true },
@@ -84,7 +146,10 @@ export struct ProfilePage {
         HaloButton({
           icon: '✏️',
           buttonSize: 'small',
-          type: 'ghost'
+          type: 'ghost',
+          onAction: () => {
+            this.editNameDialogController.open()
+          }
         })
       }
       .width('100%')

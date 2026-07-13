@@ -21,7 +21,7 @@ struct AboutPage {
   ]
 
   private teamInfo: AboutInfo[] = [
-    { label: '团队', value: '软件杯参赛队' },
+    { label: '团队', value: '代码诗人队' },
     { label: '项目', value: 'AI全屋智能控制平台' },
     { label: '技术栈', value: 'HarmonyOS + AI' }
   ]
@@ -141,7 +141,7 @@ struct AboutPage {
               .fontColor(ThemeColors.textTertiary(this.isDark))
               .textAlign(TextAlign.Center)
 
-            Text('软件杯参赛项目')
+            Text('代码诗人参赛项目')
               .fontSize(FontSize.CAPTION1)
               .fontColor(ThemeColors.textTertiary(this.isDark))
               .textAlign(TextAlign.Center)
