@@ -1,0 +1,93 @@
+每个页面独立一个.ets方便测试和维护
+entry/src/main/ets/
+├── pages/
+│   ├── Index.ets          ← 主框架（TabBar + 页面容器）
+│   ├── HomePage.ets       ← 家庭页面
+│   ├── SmartPage.ets      ← 智能页面
+│   ├── AiPage.ets         ← AI助手页面
+│   ├── ShopPage.ets       ← 商城页面
+│   └── ProfilePage.ets    ← 我的页面
+├── components/
+│   ├── DeviceCard.ets     ← 设备卡片组件（复用）
+│   ├── SceneCard.ets      ← 场景卡片组件
+│   ├── ChatBubble.ets     ← 聊天气泡组件
+│   └── ToggleSwitch.ets   ← 开关组件
+└── model/
+    └── DeviceModel.ets    ← 数据模型
+
+Index.ets（主框架 / 根页面）：加 @Entry（唯一主入口），只做底部导航 + 页面容器，不做业务内容，内部通过组件引用加载各个子页面。
+HomePage / SmartPage / AiPage / ShopPage / ProfilePage：只使用 @Component + export，不加 @Entry。
+
+DeviceCard.ets — 设备卡片复用
+意思：所有17个设备的"卡片外形"是同一套代码，只是传入的数据不同
+
+复用 = 一个模板，多种数据：
+
+DeviceCard({ icon: '💡', name: '客厅主灯', isOn: true })  → 蓝色卡片显示"💡客厅主灯"
+DeviceCard({ icon: '❄️', name: '空调', isOn: false })     → 白色卡片显示"❄️空调"
+
+好处：改样式只改一处，不用改17次
+
+SceneCard.ets — 场景/自动化卡片
+你说得完全正确：
+"把场景、自动化做成卡片，其他添加更方便"
+
+实现逻辑：
+┌────────────────────────────────┐
+│  🌅  回家模式          [运行]  │
+│      打开灯光、空调、净化器    │
+│  [客厅灯→开] [空调→26°C] ...  │
+└────────────────────────────────┘
+
+就是一个 @Component，接收场景数据渲染：
+SceneCard({ name: '回家模式', icon: '🌅', color: 'orange',
+            desc: '打开灯光、空调、净化器',
+            actions: ['客厅灯→开', '空调→26°C', ...] })
+
+新增场景时只需往数组里 push 一条数据，卡片自动渲染
+
+ChatBubble.ets — AI 聊天气泡
+你说的对，它负责【AI】页面中：
+1. 用户发送的文字（右侧蓝色气泡）
+2. AI回复的文字（左侧白色气泡）
+3. 快捷指令点击后的效果（等同于用户发送）
+
+作用：统一气泡样式，方便消息列表遍历渲染
+
+ChatBubble({ text: '打开卧室灯', role: 'user' })   → 右侧蓝色
+ChatBubble({ text: '主卧灯已开启', role: 'ai' })   → 左侧白色
+
+ToggleSwitch.ets — 开关组件
+不完全是【家庭】页面的，而是【智能】页面中"自动化"的开关
+
+智能页面每条自动化右侧有一个拨动开关：
+  ┌─────────────────────────○●─┐
+  │ 离家自动关灯          关│开│
+  └────────────────────────────┘
+
+做成独立组件是因为开关在很多地方可能复用（设备详情、设置页等）
+
+ToggleSwitch({ isOn: true, onChange: (val) => { ... } })
+
+DeviceModel.ets — 数据模型
+作用：定义"设备"这个概念包含哪些属性
+
+// model/DeviceModel.ets
+export class DeviceInfo {
+  id: number              // 设备唯一标识
+  name: string            // 设备名称，如"客厅主灯"
+  icon: string            // 图标，如'💡'
+  room: string            // 所在房间，如'客厅'
+  isOn: boolean           // 开关状态
+  colSpan: number         // 占几列
+  rowSpan: number         // 占几行
+  gridCol: number         // 在网格中的列位置
+  gridRow: number         // 在网格中的行位置
+  statusText: string      // 状态文字，如"100%"
+  setting: number         // 设置值，如亮度80、温度26
+}
+
+好处：
+1. 所有页面共享同一份数据定义
+2. 写代码时有类型提示（不容易写错属性名）
+3. 保存/读取 Preferences 时有统一的数据格式

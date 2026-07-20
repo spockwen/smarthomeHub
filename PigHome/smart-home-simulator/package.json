@@ -1,0 +1,16 @@
+{
+  "name": "smart-home-simulator",
+  "version": "1.0.0",
+  "description": "智能家居设备模拟器 - 通过 MQTT 协议模拟 8 个智能设备",
+  "main": "simulator.js",
+  "scripts": {
+    "start": "node simulator.js",
+    "dev": "node simulator.js"
+  },
+  "dependencies": {
+    "mqtt": "^5.3.0",
+    "dotenv": "^16.3.0",
+    "express": "^4.18.0",
+    "ws": "^8.16.0"
+  }
+}

@@ -1,0 +1,174 @@
+请对我的密钥、密码等隐私信息做好保护，提交上传项目时不要提交隐私文件！！！
+不允许模糊修改，如果不了解需求可以一直向我提问，直到明确需求后再改动；添加删除修改功能时，为提及的部分样式、功能、格式不要影响；每次修改后检查一下有没有报错，同样的报错要及时修改；
+D:\Study\AI\Project\Claude\demo_6_5\Project\Demo_test_07是我的DevEco应用代码文件、D:\Study\AI\Project\Claude\demo_6_5\Project\smart-home-simulator是node.js物理模拟文件
+
+每个页面独立一个.ets方便测试和维护
+entry/src/main/ets/
+├── pages/
+│   ├── Index.ets          ← 主框架（TabBar + 页面容器）
+│   ├── HomePage.ets       ← 家庭页面
+│   ├── SmartPage.ets      ← 智能页面
+│   ├── AiPage.ets         ← AI助手页面
+│   ├── ShopPage.ets       ← 商城页面
+│   └── ProfilePage.ets    ← 我的页面
+├── components/
+│   ├── DeviceCard.ets     ← 设备卡片组件（复用）
+│   ├── SceneCard.ets      ← 场景卡片组件
+│   ├── ChatBubble.ets     ← 聊天气泡组件
+│   └── ToggleSwitch.ets   ← 开关组件
+├── service/
+│   ├── DeviceStateService.ets     ← Preferences 本地持久化（重启不丢失）
+│   ├── MqttService.ets      ←  消息转发、主题路由、连接管理、权限控制
+
+所有端只和 EMQX 交互，端与端之间不直接通信(鸿蒙APP(DevEco Studio 运行)  ←MQTT→  EMQX 服务端  ←MQTT→  Node.js(模拟设备))
+
+Docker Desktop 正常运行，EMQX 容器成功启动、端口 1883/18083 映射完整；
+EMQX 后台管理面板 localhost:18083 可正常访问，MQTT 服务正常提供服务；
+MQTT Explorer 客户端配置127.0.0.1 + admin/你的密码账号，可成功连接 EMQX，支持发布 / 订阅消息，能手动模拟设备上报、APP 下发指令，用来调试链路；
+明确网络区分规则：电脑工具（MQTT Explorer/Node）用127.0.0.1，鸿蒙模拟器代码用专用宿主机地址10.0.2.2。
+
+项目目录规范分层：页面、复用组件、业务服务（MqttService/DeviceStateService）文件夹拆分完毕；
+UI 页面、设备开关组件代码已写完，具备点击下发控制指令、展示设备状态的页面逻辑；
+本地持久化服务DeviceStateService已搭建，用于缓存设备状态；
+清楚 MQTT 通信逻辑：APP 订阅xxx/state收设备状态、发布xxx/command下发控制指令
+
+现在请你阅读我的智能家居项目entry使用的是.ets文件，不能随便更改，需要我亲自修改，不然容易引起报错或者格式错误，连接我的页面、组件、服务文件夹了解文件情况（现在在DevEco中项目的页面，交互逻辑一切正常）
+
+Phase 1 ⚠️ 鸿蒙 APP 端待处理项
+
+  .ets 文件按照文档要求由你亲自修改，以下是需要改动的内容：
+
+  1. oh-package.json5 — 添加 MQTT 依赖（非 .ets，我可以帮你改）
+
+  需要在 dependencies 中添加 @ohos.mqtt：
+
+  "@ohos.mqtt": "^1.0.0"
+
+  2. HomePage.ets — 绑定 MQTT 下发指令（需你手动修改）
+
+  当前 HomePage 只做本地状态切换（如 this.isLightOn =
+  !this.isLightOn），需要同时在开关/调节时调用 MqttService
+  方法。修改点如下：
+
+  // 文件顶部添加 import
+  import { sendToggleCommand, sendAdjustCommand } from
+  '../service/MqttService'
+
+  客厅主灯（约第 122 行）onCardClick 改为：
+  onCardClick: () => {
+    this.isLightOn = !this.isLightOn
+    sendToggleCommand('客厅主灯', this.isLightOn)   // ← 新增
+  }
+
+  同样方式修改：油烟机、书房灯、空气净化器、空调、电动窗帘、投影仪
+  、智能门锁
+  的开关回调，以及书房灯亮度/空调温度/窗帘开合度的调节回调（使用
+  sendAdjustCommand）。
+   完整通信闭环验证步骤
+
+    当前系统状态：EMQX ✅ → Node.js 模拟器 ✅，就差鸿蒙 APP 端接入：
+
+    鸿蒙APP(DevEco)  ←MQTT→  EMQX(10.0.2.2:1883)  ←MQTT→
+    Node.js模拟器(127.0.0.1)
+          ↓ 待接入               ✅ 运行中                    ✅
+    运行中
+
+    你现在可以：
+    1. 在 DevEco 中修改 HomePage.ets 添加 MQTT 调用
+    2. 将 oh-package.json5 添加 @ohos.mqtt 依赖
+    3. 运行 DevEco 模拟器
+    4. 通过 MQTT Explorer 或浏览器打开 http://localhost:3000（模拟器
+    Web 面板）观察消息收发
+
+    当前的问题
+    🔴 P0 — 致命问题：设备操作未经过 MQTT，APP 无法与模拟器通信
+           当前所有设备控制都是纯本地 AppStorage 操作，没有任何 MQTT
+      指令下发。这意味着鸿蒙 APP 无法控制 Node.js
+      模拟器的设备，通信闭环断裂。
+
+      问题 1：HomePage.ets — 8 个设备开关/调节全未调用 MQTT
+
+      以客厅主灯为例（第 122 行），当前代码只是：
+      onCardClick: () => { this.isLightOn = !this.isLightOn }  //
+      仅本地
+      需要改为同时调用 sendToggleCommand。共涉及 8 个设备的开关 + 3
+      个设备的滑块调节，全部缺少 MQTT 调用。
+
+      问题 2：AIPage.ets — AI 语音/文字控制设备只操作本地状态
+
+      parseAndExecuteCommand() 中所有的
+      toggleDevice()、adjustDevice()、executeScene() 都来自
+      DeviceStateService，只改了 AppStorage，未发送 MQTT 指令。
+
+      问题 3：SmartPage.ets — 场景卡片点击无 MQTT 触发
+
+      SceneModeCard 的 onClick 是空的（第 312
+      行注释"预留点击回调"），点击回家/离家模式不会发任何 MQTT 指令。
+
+      还有一个问题是
+        问题 4：oh-package.json5 缺少 @ohos.mqtt 依赖
+
+        MqttService.ets 第 18 行 import { mqtt } from
+        '@ohos.mqtt'，但根目录 oh-package.json5 的 dependencies
+        是空的。不添加依赖会导致编译失败。
+
+
+
+现在还缺少
+  │  oh-package.json5     0%    缺少 @ohos.mqtt 依赖        │
+  │  HomePage.ets          0%    设备开关未发 MQTT 指令      │
+  │  AIPage.ets            0%    AI 控制未发 MQTT 指令       │
+  │  SmartPage.ets         0%    场景点击未发 MQTT 指令      │
+  ├─────────────────────────────────────────────────────────┤
+  │  联调测试              0%    从未验证 APP↔EMQX↔模拟器
+还差最后一步：在 HomePage.ets、AIPage.ets、SmartPage.ets
+  三个文件中，把设备控制操作从"纯本地"改成"本地 + MQTT
+  双写"。改动量不大，每个文件加几行 import 和一两行函数调用即可。
+
+
+  完成一下步骤后检查项目文件，检测报错并修改，不要改动目标以外的文件
+    在 DevEco 中完成以下三步，项目即完工：
+
+    ┌───────────┬──────┬─────────────────────────────────────────┐
+    │   文件    │ 改动 │                  内容                   │
+    │           │  量  │                                         │
+    ├───────────┼──────┼─────────────────────────────────────────┤
+    │           │      │ import                                  │
+    │ HomePage. │ ~10  │ sendToggleCommand/sendAdjustCommand，在 │
+    │ ets       │ 行   │  8 设备开关 + 3 滑块回调中追加 MQTT     │
+    │           │      │ 调用                                    │
+    ├───────────┼──────┼─────────────────────────────────────────┤
+    │           │      │ import sendToggleCommand/sendAdjustComm │
+    │ AIPage.et │ ~8   │ and/sendSceneCommand，在                │
+    │ s         │ 行   │ toggleDevice/adjustDevice/executeScene  │
+    │           │      │ 后追加 MQTT 调用                        │
+    ├───────────┼──────┼─────────────────────────────────────────┤
+    │ SmartPage │ ~5   │ import sendSceneCommand，为三个         │
+    │ .ets      │ 行   │ SceneModeCard 的 onClick 绑定场景指令
+
+
+    根据一下信息完善最后的工作
+      ---
+       ⚠️ 还需完成 — .ets 页面 MQTT 集成
+
+       这 3 个文件目前只操作本地 AppStorage，没有发 MQTT 指令，需要你在
+       DevEco 中手动添加：
+
+       1. HomePage.ets — 顶部加 import：
+       import { sendToggleCommand, sendAdjustCommand } from
+       '../service/MqttService'
+       然后在 8 设备 onCardClick + 3 滑块 onChange 中追加 MQTT
+       调用，例如：
+       // 客厅主灯：当前
+       onCardClick: () => { this.isLightOn = !this.isLightOn }
+       // 改为
+       onCardClick: () => {
+         this.isLightOn = !this.isLightOn
+         sendToggleCommand('客厅主灯', this.isLightOn)
+       }
+
+       2. AIPage.ets — import + 在
+       toggleDevice/adjustDevice/executeScene 后追加 MQTT 调用
+
+       3. SmartPage.ets — import + 为 3 个 SceneModeCard 的 onClick 绑定
+       sendSceneCommand

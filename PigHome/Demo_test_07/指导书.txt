@@ -1,0 +1,393 @@
+d:\Study\AI\Project\Claude\demo_6_5\Project\PigHome\De
+  mo_test_07\指导书.txt这是对.ets软件开发的详细说明书，d  
+  :\Study\AI\Project\Claude\demo_6_5\Project\PigHome\基   
+  于OpenHarmony的智能家居控制系统.pptx这个我项目开始前制
+  作的PPT，现在请你根据现在的项目进度帮我生成一份PPT:新_  
+  基于OpenHarmony的智能家居控制系统.pptx,这三个(界面与响  
+  应效率（10分）：ArkTS 的组件化开发，加一个"场景联动"功  
+  能（比如一键"离家模式"自动关灯锁门调温），视觉上做仪表  
+  盘风格，比普通列表好看很多。
+  可扩展性（10分）：后端写一个设备注册接口，文档说明如何  
+  接入新品牌设备。这个不需要真实实现，只需要架构设计合理  
+  ，写进文档里，评委就能看出你有工程思维。
+  协议安全（10分）：这是最容易实现的加分项。MQTT over     
+  TLS（端口8883）就是传输层加密；应用层用AES-256加密控制  
+  指令内容；密钥用环境变量或配置文件保护，不硬编码。这三  
+  点对应赛题里"传输层、数据层、密钥层"的要求，完美匹配。  
+  )是我的主要亮点
+
+
+
+------------------------------
+
+╔══════════════════════════════════════════════════════════════════╗
+║           PigHome 智能家居 — 项目结构指导书                       ║
+║           鸿蒙 NEXT (HarmonyOS API 14)                           ║
+╚══════════════════════════════════════════════════════════════════╝
+
+===========================================================
+  一、项目概述
+===========================================================
+
+PigHome 是一个基于 HarmonyOS NEXT 开发的智能家居控制 App，使用
+ArkTS 语言 + ArkUI 框架开发。支持通过 MQTT 协议与智能家居网关通信，
+实现对灯光、空调、窗帘、投影仪等设备的远程控制。
+
+■ 目标平台：HarmonyOS API 14（SDK 6.1.1）
+■ 应用类型：Entry 模块（独立安装）
+■ 总源文件数：16 个 ArkTS 文件
+■ 总代码行数：约 2,800 行
+■ 支持的页面数：5 个 Tab 页面
+■ 设备数量：17 个设备元数据 / 8 个 MQTT 可控设备
+
+
+===========================================================
+  二、完整目录结构与说明
+===========================================================
+
+Demo_test_07/
+│
+├── AppScope/                              ← 应用级全局资源
+│   └── resources/base/
+│       ├── element/
+│       │   └── string.json                → 全局字符串（应用名等）
+│       └── media/
+│           ├── background.png             → 启动页背景图
+│           ├── foreground.png             → 启动页前景图
+│           └── layered_image.json         → 自适应图标分层配置
+│
+├── entry/                                 ← 主模块目录
+│   ├── src/main/
+│   │   ├── ets/                           ← ★ ArkTS 源码根目录
+│   │   │   ├── entryability/
+│   │   │   │   └── EntryAbility.ets       → 应用入口 Ability
+│   │   │   │
+│   │   │   ├── entrybackupability/
+│   │   │   │   └── EntryBackupAbility.ets → 数据备份恢复 Ability
+│   │   │   │
+│   │   │   ├── pages/                     ← ★ 页面层（6个文件）
+│   │   │   │   ├── Index.ets              → 【主框架】唯一 @Entry
+│   │   │   │   ├── HomePage.ets           → 【家庭页】设备控制
+│   │   │   │   ├── SmartPage.ets          → 【智能页】场景/自动化
+│   │   │   │   ├── AIPage.ets             → 【AI助手】对话控制
+│   │   │   │   ├── StorePage.ets          → 【商城】静态商品页
+│   │   │   │   └── MinePage.ets           → 【我的】信息/设置
+│   │   │   │
+│   │   │   ├── components/                ← ★ 组件层（4个组件）
+│   │   │   │   ├── DeviceCard.ets         → 设备卡片（7种模式）
+│   │   │   │   ├── SceneCard.ets          → 场景/自动化卡片
+│   │   │   │   ├── ChatBubble.ets         → AI聊天气泡
+│   │   │   │   └── ToggleSwitch.ets       → 开关组件
+│   │   │   │
+│   │   │   ├── service/                   ← ★ 服务层（核心逻辑）
+│   │   │   │   ├── DeviceStateService.ets → 状态管理与业务逻辑
+│   │   │   │   └── MqttService.ets        → MQTT 通信引擎
+│   │   │   │
+│   │   │   └── model/
+│   │   │       └── DeviceModel.ets        → 统一数据类型定义
+│   │   │
+│   │   ├── resources/base/                ← 模块级资源
+│   │   │   ├── element/
+│   │   │   │   ├── color.json             → 主题色定义
+│   │   │   │   ├── string.json            → 字符串资源
+│   │   │   │   └── float.json             → 浮点数常量
+│   │   │   ├── media/                     → 图标与图片素材
+│   │   │   └── profile/
+│   │   │       ├── main_pages.json        → ★ 页面路由注册文件
+│   │   │       └── route_map.json         → 路由映射配置
+│   │   │
+│   │   └── module.json5                   → ★ 模块配置（权限/Ability）
+│   │
+│   ├── oh-package.json5                   → entry 依赖声明
+│   └── hvigorfile.ts                      → entry 构建配置
+│
+├── build-profile.json5                    → ★ 项目构建配置（SDK版本）
+├── hvigorfile.ts                          → 项目级构建脚本
+├── oh-package.json5                       → 项目级依赖管理
+└── local.properties                       → 本地 SDK 路径（自动生成）
+
+
+===========================================================
+  三、每个文件夹的功能说明
+===========================================================
+
+┌─────────────────────────────────────────────────────────┐
+│ 【AppScope/】— 应用级全局资源                            │
+│                                                         │
+│ 存放应用级别的全局配置与资源，所有模块共享。               │
+│ 包括：应用名称字符串、启动窗口背景图、自适应图标配置。      │
+│ 对应 HarmonyOS 的 app.json5（应用级配置）。               │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ 【entry/】— 主模块                                      │
+│                                                         │
+│ entry 类型模块，可独立安装运行。包含全部源代码和资源。      │
+│ 这是应用的核心模块目录。                                  │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ 【entry/src/main/ets/】— ArkTS 源码根目录                │
+│                                                         │
+│ 所有 TypeScript/ArkTS 源代码存放于此。按功能分为：         │
+│ pages/（页面）、components/（组件）、service/（服务）、     │
+│ model/（模型）。                                         │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ 【pages/】— 页面层                                       │
+│                                                         │
+│ 应用界面层，每个文件对应一个独立页面。                     │
+│ Index.ets 作为唯一 @Entry，包含底部 Tabs 导航，承载        │
+│ 其余 5 个页面作为 Tab 内容。                              │
+│                                                         │
+│ 页面职责分配：                                           │
+│   Index.ets    → 框架 + 生命周期 + MQTT 连接管理          │
+│   HomePage.ets → 设备列表 + 开关/调节控制                 │
+│   SmartPage.ets→ 场景模式 + 自动化规则管理                │
+│   AIPage.ets   → 对话式 AI + 自然语言设备控制             │
+│   StorePage.ets→ 商品展示（纯静态数据）                    │
+│   MinePage.ets → 个人信息 + 用电统计 + 设置菜单           │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ 【components/】— 可复用组件层                             │
+│                                                         │
+│ 跨页面共用的 UI 组件。所有组件通过 @Prop/@State 接收       │
+│ 数据并驱动 UI 渲染。                                     │
+│                                                         │
+│ 组件清单：                                               │
+│   DeviceCard.ets    → 设备卡片（7 种模式：标准/竖放/      │
+│                        跨行/温湿度/空占位/添加/编辑）      │
+│   SceneCard.ets     → 3合1：场景卡片 + 自动化开关卡片     │
+│                        + 模式选择卡片                     │
+│   ChatBubble.ets    → AI 聊天气泡（用户/AI 两种样式）     │
+│   ToggleSwitch.ets  → Toggle 开关的轻量封装              │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ 【service/】— 服务层（业务逻辑核心）                      │
+│                                                         │
+│ 纯逻辑层，不含 UI 渲染代码。封装设备状态管理和通信协议。    │
+│                                                         │
+│   DeviceStateService.ets（530 行）— 状态管理中枢          │
+│   ├─ 11 个 AppStorage Key 常量定义                       │
+│   ├─ 17 个设备的元数据（名称/房间/开关/滑块）              │
+│   ├─ 8 个房间的分类标签                                  │
+│   ├─ initDeviceState()       → 启动时恢复持久化状态        │
+│   ├─ toggleDevice(name)      → 开关设备                   │
+│   ├─ adjustDevice(name, val) → 调节参数（温度/亮度等）     │
+│   ├─ executeScene(name)      → 执行场景模式               │
+│   ├─ getDevicesByRoom(room)  → 按房间筛选设备             │
+│   ├─ getOnlineDeviceCount()  → 统计在线设备数             │
+│   ├─ isDeviceOn(name)        → 查询设备开关状态            │
+│   ├─ toggleAllLights()       → 一键全开/全关灯            │
+│   ├─ saveChatHistory()       → 聊天记录持久化             │
+│   └─ loadChatHistory()       → 聊天记录恢复               │
+│                                                         │
+│   MqttService.ets（936 行）— MQTT 通信引擎                │
+│   ├─ 零第三方依赖：纯 WebSocket 实现 MQTT 3.1.1 协议       │
+│   ├─ 连接管理：connectMqtt() / disconnectMqtt()           │
+│   ├─ 指令发布：sendToggleCommand / sendAdjustCommand      │
+│   │            / sendSceneCommand                         │
+│   ├─ 消息接收：handleMessage() → 更新 AppStorage 状态      │
+│   ├─ 心跳保活：30 秒间隔 PINGREQ                          │
+│   ├─ 自动重连：断线后 5 秒自动尝试重连                      │
+│   └─ 设备映射：中文名 → MQTT 设备 ID（8 个可控设备）        │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ 【model/】— 数据模型层                                    │
+│                                                         │
+│ 统一类型定义，供所有页面引用。避免各文件重复声明接口。      │
+│                                                         │
+│ 定义的接口：                                             │
+│   DeviceInfo   → 家庭页设备信息                           │
+│   SceneInfo    → 智能页场景信息                           │
+│   AutoInfo     → 智能页自动化信息                         │
+│   ChatMessage  → AI 页聊天消息                            │
+│   QuickCmd     → AI 页快捷指令                            │
+│   ProductInfo  → 商城页商品                               │
+│   PowerUsage   → 我的页用电数据                           │
+│   MenuOption   → 我的页菜单项                             │
+└─────────────────────────────────────────────────────────┘
+
+
+===========================================================
+  四、关键配置文件说明
+===========================================================
+
+■ entry/src/main/module.json5  — 模块核心配置
+  │
+  ├─ module.type = "entry"         → 独立安装模块
+  ├─ deviceTypes                  → 支持 phone, tablet
+  ├─ mainElement = "EntryAbility"  → 启动入口
+  ├─ pages = "$profile:main_pages" → 页面路由引用
+  ├─ requestPermissions           → INTERNET 联网权限
+  │                                  （MQTT WebSocket 必需）
+  └─ extensionAbilities           → 备份恢复能力
+
+■ entry/src/main/resources/base/profile/main_pages.json5
+  │
+  → 页面路由注册表。新增页面时必须在此文件注册。
+  → 目前注册：pages/Index 为唯一入口页
+
+■ build-profile.json5  — 项目构建配置
+  │
+  ├─ targetSdkVersion = 6.1.1(24) → API 14
+  ├─ compileSdkVersion = 6.1.1(24)
+  ├─ runtimeOS = "HarmonyOS"
+  └─ strict mode 开启（caseSensitiveCheck, useNormalizedOHMUrl）
+
+
+===========================================================
+  五、数据流架构
+===========================================================
+
+┌───────────────────────────────────────────────────────────────────┐
+│                        数据流转全景图                               │
+├───────────────────────────────────────────────────────────────────┤
+│                                                                    │
+│  ① 用户操作页面（点击/滑动开关）                                    │
+│      │                                                             │
+│      ▼                                                             │
+│  ② 页面调用服务层函数                                              │
+│      │                                                             │
+│      ├─→ DeviceStateService                                       │
+│      │       ├─ AppStorage.Set()    → UI 自动刷新                  │
+│      │       └─ Preferences.flush() → 本地持久化                    │
+│      │                                                             │
+│      └─→ MqttService.sendXxx()                                    │
+│              └─ WebSocket → EMQX 网关 → 硬件设备                   │
+│                                                                    │
+│  ③ 硬件状态变化回传                                                │
+│      │                                                             │
+│      └─ EMQX → WebSocket → MqttService.handleMessage()            │
+│               └─ AppStorage.Set() → UI 自动刷新                    │
+│                                                                    │
+│  ④ 应用重启恢复                                                    │
+│      └─ Index.ets 启动 → initDeviceState()                         │
+│               ├─ Preferences 有数据 → 恢复上次状态                  │
+│               └─ 无数据 → 设置默认值                                │
+│                                                                    │
+└───────────────────────────────────────────────────────────────────┘
+
+■ 状态共享机制
+  所有页面通过 @StorageLink / AppStorage.Get() 共享同一个全局
+  状态池。任何一处修改，所有依赖该状态的组件自动刷新渲染。
+
+
+===========================================================
+  六、设备清单
+===========================================================
+
+■ MQTT 可控设备（8 个，有真实通信）：
+
+  客厅主灯   living_room_light    → 开/关
+  书房灯     study_light          → 开/关 + 亮度调节
+  油烟机     range_hood           → 开/关
+  空气净化器 air_purifier         → 开/关
+  空调       ac                   → 开/关 + 温度调节
+  电动窗帘   curtain              → 开/关 + 开合度调节
+  投影仪     projector            → 开/关
+  智能门锁   door_lock            → 锁定/解锁
+
+■ 静态设备（9 个，仅 UI 展示无通信）：
+
+  热水器、洗衣机、扫地机器人、加湿器、
+  智能音箱、路由器、电饭煲、智能猫眼、烟雾报警器
+
+■ 场景模式（3 个）：
+
+  回家模式 → 开灯/空调/净化器，解锁门锁
+  离家模式 → 关所有设备，锁定门锁
+  观影模式 → 调暗灯光，开投影仪，关窗帘
+
+
+===========================================================
+  七、MQTT 通信协议（EMQX 网关）
+===========================================================
+
+■ 连接地址
+  URL: ws://10.0.2.2:8083/mqtt
+  Client ID: pig_home_app_xxx（随机生成）
+
+■ 主题约定
+  home/device/{deviceId}/state    → 设备上报状态（APP 订阅）
+  home/device/{deviceId}/command  → APP 下发指令（设备订阅）
+
+■ 指令格式
+  开关：     {"action": "toggle", "on": true/false}
+  调节：     {"action": "adjust", "value": 26}
+  场景：     {"action": "scene", "scene": "回家模式"}
+
+■ 状态推送
+  设备状态按 topic 推送：
+  home/device/{deviceId}/state/app → APP 接收端
+  格式：{"on": true, "brightness": 80, "timestamp": 1234567890}
+
+
+===========================================================
+  八、项目关键依赖与 SDK
+===========================================================
+
+■ HarmonyOS SDK：6.1.1 (API 14)
+■ 运行时：HarmonyOS
+■ ArkTS 严格模式：已开启（arkts-no-untyped-obj-literals 等）
+■ 零第三方 MQTT 依赖：纯 @ohos.net.webSocket 实现
+■ 持久化：@ohos.data.preferences
+■ 测试框架：@ohos/hypium 1.0.25 + @ohos/hamock 1.0.0
+
+
+===========================================================
+  九、页面路由注册说明
+===========================================================
+
+HarmonyOS 要求所有页面在 main_pages.json 中注册。
+
+路径：
+  entry/src/main/resources/base/profile/main_pages.json5
+
+当前注册：
+  {
+    "src": ["pages/Index"]
+  }
+
+⚠ 注意：Index.ets 是唯一的 @Entry 页面，内部通过 Tabs
+  组件承载 5 个子页面，无需额外路由注册。
+
+
+===========================================================
+  十、开发注意事项
+===========================================================
+
+1. 新增设备时：
+   - 在 DeviceStateService.ets 的 ALL_DEVICES 数组添加元数据
+   - 在 KEYS 对象添加对应的 AppStorage 键名
+   - 在 MqttService.ets 的 DEVICE_NAME_TO_ID 添加映射
+   - 在 HomePage.ets 的 getDeviceCard() 添加对应卡片渲染分支
+
+2. 新增场景时：
+   - 在 DeviceStateService.ets 的 executeScene() 添加分支
+   - 在 SmartPage.ets 添加新的 SceneModeCard 实例
+
+3. 新增页面时：
+   - 在 main_pages.json 注册路由
+   - 在 Index.ets 的 Tabs 中添加 TabContent
+
+4. MQTT 连接：
+   - 地址 10.0.2.2 是 Android 模拟器 loopback，真实设备需改为
+     实际网关 IP
+   - 断线自动重连间隔 5 秒
+   - 心跳保活间隔 30 秒
+
+5. ArkTS 严格模式限制：
+   - 禁止索引签名 [key: string]: type
+   - 禁止索引访问 obj[key]
+   - 对象字面量必须匹配显式声明的接口/类
+   - JSON 操作需手动拼串，不可用 JSON.stringify/parse
+
+
+===========================================================
+  文档生成时间：2026-07-20
+===========================================================

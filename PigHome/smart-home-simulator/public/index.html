@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能家居模拟器 - 可视化面板</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0f1923;
+      --card-bg: #1a2736;
+      --card-hover: #213244;
+      --accent: #4fc3f7;
+      --accent-dim: #2a6f8f;
+      --green: #66bb6a;
+      --red: #ef5350;
+      --orange: #ffa726;
+      --text: #e0e0e0;
+      --text-dim: #78909c;
+      --border: #2a3a4a;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===== 顶部状态栏 ===== */
+    .header {
+      background: linear-gradient(135deg, #1a2736 0%, #0d2137 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-left h1 { font-size: 18px; font-weight: 600; }
+    .header-left .logo { font-size: 24px; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .status-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 500;
+    }
+    .status-badge.online { background: rgba(102,187,106,0.15); color: var(--green); }
+    .status-badge.offline { background: rgba(239,83,80,0.15); color: var(--red); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status-dot.online { background: var(--green); animation: pulse 2s infinite; }
+    .status-dot.offline { background: var(--red); }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .online-count { font-size: 13px; color: var(--text-dim); }
+
+    /* ===== 室内环境面板 ===== */
+    .environment-panel {
+      background: linear-gradient(135deg, #1a2736 0%, #0d2137 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .env-info {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .env-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .env-icon {
+      font-size: 24px;
+    }
+    .env-details {
+      display: flex;
+      flex-direction: column;
+    }
+    .env-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .env-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .env-value.hot { color: var(--red); }
+    .env-value.cool { color: var(--accent); }
+    .env-value.warm { color: var(--orange); }
+    .env-status {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+    .env-status.cooling { color: var(--accent); }
+
+    .temp-control-panel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.05);
+      padding: 12px 16px;
+      border-radius: 12px;
+    }
+    .temp-control-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .temp-slider {
+      width: 120px;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #37474f;
+      border-radius: 3px;
+      outline: none;
+    }
+    .temp-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--bg);
+    }
+    .temp-slider-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 45px;
+      text-align: center;
+    }
+    .temp-apply-btn {
+      padding: 6px 16px;
+      border-radius: 6px;
+      border: none;
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .temp-apply-btn:hover {
+      background: #81d4fa;
+      transform: scale(1.05);
+    }
+
+    /* ===== 时间控制面板 ===== */
+    .time-panel {
+      background: linear-gradient(135deg, #1a2736 0%, #0d2137 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+    }
+    .time-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .time-panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .time-display {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .time-clock {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'Consolas', 'Monaco', monospace;
+      text-shadow: 0 0 20px rgba(79, 195, 247, 0.3);
+    }
+    .time-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .time-mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .time-mode-badge.simulated {
+      background: rgba(255, 167, 38, 0.2);
+      color: var(--orange);
+    }
+    .time-mode-badge.real {
+      background: rgba(102, 187, 106, 0.2);
+      color: var(--green);
+    }
+    .time-speed {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .time-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .time-input-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .time-input {
+      width: 60px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 14px;
+      text-align: center;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .time-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .time-label {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .time-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .time-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .time-btn.active {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+    .time-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .time-speed-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 16px;
+      padding-left: 16px;
+      border-left: 1px solid var(--border);
+    }
+
+    /* ===== 自动化面板 ===== */
+    .automations-section {
+      margin-top: 24px;
+    }
+    .automations-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .automations-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+    .automation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .automation-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      transition: all 0.25s;
+    }
+    .automation-card:hover {
+      background: var(--card-hover);
+      border-color: var(--accent-dim);
+    }
+    .automation-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .automation-name {
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .automation-toggle {
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      background: #37474f;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .automation-toggle.on {
+      background: var(--accent);
+    }
+    .automation-toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 0.3s;
+    }
+    .automation-toggle.on::after {
+      transform: translateX(16px);
+    }
+    .automation-description {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .automation-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: rgba(79, 195, 247, 0.1);
+      color: var(--accent);
+      margin-right: 6px;
+    }
+    .automation-actions-count {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .automation-execute-btn {
+      margin-top: 8px;
+      padding: 5px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .automation-execute-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ===== 场景按钮栏 ===== */
+    .scene-bar {
+      padding: 12px 24px;
+      display: flex; gap: 10px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(26,39,54,0.5);
+    }
+    .scene-btn {
+      padding: 8px 20px; border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 13px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .scene-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .scene-btn:active { transform: scale(0.95); }
+
+    /* ===== 主内容区 ===== */
+    .main { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
+
+    /* ===== 房间分区 ===== */
+    .room-section { margin-bottom: 24px; }
+    .room-title {
+      font-size: 14px; font-weight: 600;
+      color: var(--text-dim); text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 12px;
+      padding-left: 4px;
+    }
+
+    /* ===== 设备网格 ===== */
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    /* ===== 设备卡片 ===== */
+    .device-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .device-card:hover {
+      background: var(--card-hover);
+      border-color: var(--accent-dim);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .device-card.on { border-color: var(--accent-dim); }
+    .device-card.on::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+    }
+
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .card-icon { font-size: 28px; }
+    .card-toggle {
+      width: 44px; height: 24px; border-radius: 12px;
+      background: #37474f; border: none; cursor: pointer;
+      position: relative; transition: background 0.3s;
+    }
+    .card-toggle.on { background: var(--accent); }
+    .card-toggle::after {
+      content: '';
+      position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: white; transition: transform 0.3s;
+    }
+    .card-toggle.on::after { transform: translateX(20px); }
+
+    .card-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .card-status { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+    .card-status.on { color: var(--accent); }
+
+    /* 进度条 */
+    .progress-bar {
+      height: 6px; border-radius: 3px;
+      background: #37474f; margin-top: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      transition: width 0.5s ease;
+    }
+
+    /* 温度调节 */
+    .temp-control {
+      display: flex; align-items: center; gap: 8px; margin-top: 8px;
+    }
+    .temp-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--card-bg); color: var(--text);
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .temp-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .temp-value { font-size: 20px; font-weight: 600; color: var(--accent); min-width: 50px; text-align: center; }
+
+    /* 状态指示灯 */
+    .status-indicator {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; margin-right: 6px;
+    }
+    .status-indicator.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .status-indicator.off { background: #546e7a; }
+
+    /* 门锁特殊样式 */
+    .lock-icon { font-size: 20px; }
+    .lock-icon.locked { color: var(--green); }
+    .lock-icon.unlocked { color: var(--orange); }
+
+    /* ===== 日志区域 ===== */
+    .log-section {
+      margin-top: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .log-header {
+      padding: 10px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .log-header h3 { font-size: 13px; font-weight: 500; color: var(--text-dim); }
+    .log-toggle { font-size: 12px; color: var(--text-dim); }
+    .log-body {
+      max-height: 200px; overflow-y: auto;
+      padding: 8px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+    }
+    .log-body.collapsed { max-height: 0; padding: 0; }
+    .log-entry {
+      padding: 3px 16px;
+      color: var(--text-dim);
+      border-bottom: 1px solid rgba(42,58,74,0.3);
+    }
+    .log-entry .time { color: #546e7a; margin-right: 8px; }
+    .log-entry.cmd { color: var(--orange); }
+    .log-entry.state { color: var(--accent); }
+    .log-entry.error { color: var(--red); }
+
+    /* ===== 滚动条美化 ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #37474f; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #546e7a; }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 600px) {
+      .header { padding: 12px 16px; }
+      .main { padding: 16px; }
+      .device-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .device-card { padding: 12px; }
+    }
+
+    /* ===== 动画效果 ===== */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .scene-btn:active {
+      transform: scale(0.95);
+    }
+
+    .scene-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部状态栏 -->
+  <div class="header">
+    <div class="header-left">
+      <span class="logo">🏠</span>
+      <h1>智能家居模拟器</h1>
+    </div>
+    <div class="header-right">
+      <span class="online-count" id="onlineCount">设备: 0/0 在线</span>
+      <div class="status-badge offline" id="connBadge">
+        <span class="status-dot offline" id="connDot"></span>
+        <span id="connText">未连接</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 室内环境面板 -->
+  <div class="environment-panel">
+    <div class="env-info">
+      <div class="env-item">
+        <span class="env-icon">🌡️</span>
+        <div class="env-details">
+          <span class="env-label">室内温度</span>
+          <span class="env-value cool" id="roomTemp">--℃</span>
+          <span class="env-status" id="acStatus">空调关闭</span>
+        </div>
+      </div>
+      <div class="env-item">
+        <span class="env-icon">💧</span>
+        <div class="env-details">
+          <span class="env-label">室内湿度</span>
+          <span class="env-value" id="roomHumidity">--%</span>
+        </div>
+      </div>
+      <div class="env-item">
+        <span class="env-icon">☀️</span>
+        <div class="env-details">
+          <span class="env-label">室外温度</span>
+          <span class="env-value warm" id="outdoorTemp">--℃</span>
+        </div>
+      </div>
+    </div>
+    <div class="temp-control-panel">
+      <span class="temp-control-label">设置室温:</span>
+      <input type="number" class="time-input" id="tempInput" min="10" max="40" value="26" step="0.5" style="width: 70px;">
+      <span class="time-label">℃</span>
+      <button class="temp-apply-btn" onclick="applyRoomTemperature()">应用</button>
+      <span style="margin-left: 12px; font-size: 11px; color: #78909c;">制冷阈值: <span style="color: #4fc3f7;">26℃</span></span>
+    </div>
+  </div>
+
+  <!-- 场景按钮栏 -->
+  <div class="scene-bar">
+    <button class="scene-btn" onclick="sendScene('scene_home')">🏡 回家模式</button>
+    <button class="scene-btn" onclick="sendScene('scene_leave')">🏠 离家模式</button>
+    <button class="scene-btn" onclick="sendScene('scene_movie')">🎬 观影模式</button>
+    <button class="scene-btn" onclick="refreshSync()">🔄 刷新同步</button>
+    <button class="scene-btn" onclick="sendScene('query')">📊 查询状态</button>
+  </div>
+
+  <!-- 时间控制面板 -->
+  <div class="time-panel">
+    <div class="time-panel-header">
+      <div class="time-panel-title">
+        ⏰ 时间模拟
+        <span class="time-mode-badge" id="timeModeBadge">运行中</span>
+      </div>
+    </div>
+    <div class="time-display">
+      <div class="time-clock" id="timeClock">--:--:--</div>
+    </div>
+    <div class="time-controls">
+      <button class="time-btn" id="timeSettingBtn" onclick="toggleTimeSetting()">设置时间</button>
+      <div class="time-input-group" id="timeInputGroup" style="display: none;">
+        <input type="number" class="time-input" id="timeInputHour" min="0" max="23" value="8">
+        <span class="time-label">时</span>
+        <input type="number" class="time-input" id="timeInputMinute" min="0" max="59" value="0">
+        <span class="time-label">分</span>
+        <button class="time-btn active" onclick="confirmTimeSetting()">确认</button>
+        <button class="time-btn" onclick="cancelTimeSetting()">取消</button>
+      </div>
+      <button class="time-btn" onclick="resetAutomationExecutions()">重置定时任务</button>
+    </div>
+  </div>
+
+  <!-- 主内容区 -->
+  <div class="main" id="mainContent">
+    <!-- 内容由 JavaScript 动态生成 -->
+  </div>
+
+  <!-- 日志区域 -->
+  <div class="main">
+    <div class="log-section">
+      <div class="log-header" onclick="toggleLog()">
+        <h3>📋 MQTT 消息日志</h3>
+        <span class="log-toggle" id="logToggle">▼ 展开</span>
+      </div>
+      <div class="log-body collapsed" id="logBody"></div>
+    </div>
+  </div>
+
+<script>
+// ============================================================
+//  设备数据 & 状态
+// ============================================================
+
+const DEVICES = [
+  { id: 'living_room_light', name: '客厅主灯', icon: '💡', room: '客厅', type: 'light' },
+  { id: 'study_light',       name: '书房灯',   icon: '💡', room: '书房', type: 'light' },
+  { id: 'range_hood',        name: '油烟机',   icon: '🍳', room: '厨房', type: 'appliance' },
+  { id: 'air_purifier',      name: '空气净化器', icon: '💨', room: '客厅', type: 'appliance' },
+  { id: 'ac',                name: '空调',     icon: '❄️', room: '客厅', type: 'ac' },
+  { id: 'curtain',           name: '电动窗帘', icon: '🪟', room: '主卧', type: 'curtain' },
+  { id: 'projector',         name: '投影仪',   icon: '🎥', room: '客厅', type: 'appliance' },
+  { id: 'door_lock',         name: '智能门锁', icon: '🔒', room: '客厅', type: 'lock' }
+]
+
+const ROOMS = ['客厅', '书房', '主卧', '厨房']
+
+// 设备运行时状态
+const deviceStates = {}
+DEVICES.forEach(d => {
+  deviceStates[d.id] = { online: true, on: false, locked: true, brightness: 0, temperature: 24, level: 0, aqi: 0 }
+})
+
+let logExpanded = false
+
+// ============================================================
+//  渲染设备卡片
+// ============================================================
+
+function render() {
+  const main = document.getElementById('mainContent')
+  main.innerHTML = ''
+
+  ROOMS.forEach(room => {
+    const roomDevices = DEVICES.filter(d => d.room === room)
+    if (roomDevices.length === 0) return
+
+    const section = document.createElement('div')
+    section.className = 'room-section'
+    section.innerHTML = `<div class="room-title">${room}</div>`
+
+    const grid = document.createElement('div')
+    grid.className = 'device-grid'
+
+    roomDevices.forEach(device => {
+      grid.appendChild(createDeviceCard(device))
+    })
+
+    section.appendChild(grid)
+    main.appendChild(section)
+  })
+
+  // 添加协议安全展示区
+  addSecuritySection(main)
+
+  // 添加可扩展性展示区
+  addExtensibilitySection(main)
+
+  // 绑定按钮事件
+  bindButtonEvents()
+
+  updateOnlineCount()
+}
+
+// 绑定按钮事件
+function bindButtonEvents() {
+  // 协议安全演示按钮
+  const btnEncryption = document.getElementById('btnSimulateEncryption')
+  if (btnEncryption) {
+    btnEncryption.addEventListener('click', function() {
+      // 添加点击反馈
+      this.textContent = '⏳ 加载中...'
+      this.disabled = true
+      this.style.opacity = '0.6'
+
+      // 延迟执行，显示加载状态
+      setTimeout(() => {
+        simulateEncryption()
+        // 恢复按钮状态
+        this.textContent = '🔐 模拟加密演示'
+        this.disabled = false
+        this.style.opacity = '1'
+      }, 300)
+    })
+  }
+
+  // 设备注册演示按钮
+  const btnRegistration = document.getElementById('btnShowDeviceRegistration')
+  if (btnRegistration) {
+    btnRegistration.addEventListener('click', function() {
+      // 添加点击反馈
+      this.textContent = '⏳ 加载中...'
+      this.disabled = true
+      this.style.opacity = '0.6'
+
+      // 延迟执行，显示加载状态
+      setTimeout(() => {
+        showDeviceRegistration()
+        // 恢复按钮状态
+        this.textContent = '📝 设备注册演示'
+        this.disabled = false
+        this.style.opacity = '1'
+      }, 300)
+    })
+  }
+
+  // 注册新设备按钮
+  const btnRegister = document.getElementById('btnRegisterNewDevice')
+  if (btnRegister) {
+    btnRegister.addEventListener('click', function() {
+      // 添加点击反馈
+      this.textContent = '⏳ 注册中...'
+      this.disabled = true
+      this.style.opacity = '0.6'
+
+      // 延迟执行，显示加载状态
+      setTimeout(() => {
+        registerNewDevice()
+        // 恢复按钮状态
+        this.textContent = '注册'
+        this.disabled = false
+        this.style.opacity = '1'
+      }, 500)
+    })
+  }
+}
+
+// 添加协议安全展示区
+function addSecuritySection(container) {
+  const section = document.createElement('div')
+  section.style.cssText = 'margin-top: 24px; margin-bottom: 24px;'
+  section.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h2 style="font-size: 18px; color: #e0e0e0; margin: 0;">🔒 协议安全架构（三层加密）</h2>
+      <button class="scene-btn" id="btnSimulateEncryption">🔐 模拟加密演示</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+      <!-- 传输层 TLS 1.3 -->
+      <div class="automation-card" id="tlsCard">
+        <div class="automation-card-header">
+          <div class="automation-name">📡 传输层安全</div>
+          <span class="status-badge online" id="tlsStatus">已启用</span>
+        </div>
+        <div class="automation-description">MQTT over TLS 1.3 加密通道</div>
+        <div style="margin-top: 10px;">
+          <div style="font-size: 11px; color: #78909c;">协议版本</div>
+          <div style="font-size: 14px; color: #4fc3f7; font-weight: 600;">TLS 1.3</div>
+        </div>
+        <div style="margin-top: 6px;">
+          <div style="font-size: 11px; color: #78909c;">加密端口</div>
+          <div style="font-size: 14px; color: #4fc3f7; font-weight: 600;">8883</div>
+        </div>
+        <div style="margin-top: 6px;">
+          <div style="font-size: 11px; color: #78909c;">握手状态</div>
+          <div style="font-size: 14px; color: #66bb6a; font-weight: 600;" id="tlsHandshake">已完成 ✓</div>
+        </div>
+      </div>
+
+      <!-- 数据层 AES-256 -->
+      <div class="automation-card" id="aesCard">
+        <div class="automation-card-header">
+          <div class="automation-name">🔐 数据层安全</div>
+          <span class="status-badge online" id="aesStatus">已启用</span>
+        </div>
+        <div class="automation-description">AES-256 对称加密指令内容</div>
+        <div style="margin-top: 10px;">
+          <div style="font-size: 11px; color: #78909c;">加密算法</div>
+          <div style="font-size: 14px; color: #4fc3f7; font-weight: 600;">AES-256-GCM</div>
+        </div>
+        <div style="margin-top: 6px;">
+          <div style="font-size: 11px; color: #78909c;">密钥长度</div>
+          <div style="font-size: 14px; color: #4fc3f7; font-weight: 600;">256 bit</div>
+        </div>
+        <div style="margin-top: 6px;">
+          <div style="font-size: 11px; color: #78909c;">加密状态</div>
+          <div style="font-size: 14px; color: #66bb6a; font-weight: 600;" id="aesEncryptStatus">就绪</div>
+        </div>
+      </div>
+
+      <!-- 密钥层安全 -->
+      <div class="automation-card" id="keyCard">
+        <div class="automation-card-header">
+          <div class="automation-name">🔑 密钥层安全</div>
+          <span class="status-badge online" id="keyStatus">已启用</span>
+        </div>
+        <div class="automation-description">密钥安全存储与定期轮换</div>
+        <div style="margin-top: 10px;">
+          <div style="font-size: 11px; color: #78909c;">存储方式</div>
+          <div style="font-size: 14px; color: #4fc3f7; font-weight: 600;">系统密钥库</div>
+        </div>
+        <div style="margin-top: 6px;">
+          <div style="font-size: 11px; color: #78909c;">轮换周期</div>
+          <div style="font-size: 14px; color: #4fc3f7; font-weight: 600;">24小时</div>
+        </div>
+        <div style="margin-top: 6px;">
+          <div style="font-size: 11px; color: #78909c;">上次轮换</div>
+          <div style="font-size: 14px; color: #66bb6a; font-weight: 600;" id="lastKeyRotation">刚刚</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加密演示区域 -->
+    <div id="encryptionDemo" style="display: none; background: #1a2736; border: 1px solid #2a3a4a; border-radius: 12px; padding: 16px;">
+      <div style="font-size: 14px; font-weight: 600; color: #e0e0e0; margin-bottom: 12px;">🔐 加密演示过程</div>
+      <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-bottom: 12px;">
+        <div>
+          <div style="font-size: 11px; color: #78909c; margin-bottom: 4px;">原始指令 (明文)</div>
+          <div style="font-family: Consolas; font-size: 12px; color: #ffa726; background: #0f1923; padding: 10px; border-radius: 6px; border: 1px solid #2a3a4a;" id="originalCommand">{"action":"on","device":"light"}</div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+          <div style="font-size: 10px; color: #78909c;">AES-256</div>
+          <div style="font-size: 24px; color: #4fc3f7;">→</div>
+          <div style="font-size: 10px; color: #78909c;">加密</div>
+        </div>
+        <div>
+          <div style="font-size: 11px; color: #78909c; margin-bottom: 4px;">加密后 (密文)</div>
+          <div style="font-family: Consolas; font-size: 12px; color: #66bb6a; background: #0f1923; padding: 10px; border-radius: 6px; border: 1px solid #2a3a4a; word-break: break-all;" id="encryptedCommand">点击"模拟加密演示"查看...</div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center;">
+        <div>
+          <div style="font-size: 11px; color: #78909c; margin-bottom: 4px;">加密密钥 (256bit)</div>
+          <div style="font-family: Consolas; font-size: 12px; color: #4fc3f7; background: #0f1923; padding: 10px; border-radius: 6px; border: 1px solid #2a3a4a;" id="aesKey">点击"模拟加密演示"查看...</div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+          <div style="font-size: 10px; color: #78909c;">AES-256</div>
+          <div style="font-size: 24px; color: #66bb6a;">→</div>
+          <div style="font-size: 10px; color: #78909c;">解密</div>
+        </div>
+        <div>
+          <div style="font-size: 11px; color: #78909c; margin-bottom: 4px;">解密后 (明文)</div>
+          <div style="font-family: Consolas; font-size: 12px; color: #66bb6a; background: #0f1923; padding: 10px; border-radius: 6px; border: 1px solid #2a3a4a;" id="decryptedCommand">点击"模拟加密演示"查看...</div>
+        </div>
+      </div>
+    </div>
+  `
+  container.appendChild(section)
+}
+
+// 添加可扩展性展示区
+function addExtensibilitySection(container) {
+  const section = document.createElement('div')
+  section.style.cssText = 'margin-bottom: 24px;'
+  section.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h2 style="font-size: 18px; color: #e0e0e0; margin: 0;">🔌 可扩展性架构</h2>
+      <button class="scene-btn" id="btnShowDeviceRegistration">📝 设备注册演示</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+      <!-- 设备注册接口 -->
+      <div class="automation-card" id="registrationCard">
+        <div class="automation-card-header">
+          <div class="automation-name">📋 设备注册接口</div>
+          <span class="status-badge online">RESTful API</span>
+        </div>
+        <div class="automation-description">统一设备注册规范，支持新设备快速接入</div>
+        <div style="margin-top: 12px; font-family: Consolas; font-size: 11px; background: #0f1923; padding: 10px; border-radius: 6px; border: 1px solid #2a3a4a;">
+          <div style="color: #78909c;">// 设备注册接口</div>
+          <div style="color: #4fc3f7; margin-top: 4px;">POST /api/devices/register</div>
+          <div style="color: #78909c; margin-top: 8px;">// 请求体</div>
+          <div style="color: #ffa726; margin-top: 4px;">{</div>
+          <div style="color: #ffa726; padding-left: 12px;">"deviceId": "new_device_001",</div>
+          <div style="color: #ffa726; padding-left: 12px;">"deviceType": "light",</div>
+          <div style="color: #ffa726; padding-left: 12px;">"manufacturer": "Xiaomi",</div>
+          <div style="color: #ffa726; padding-left: 12px;">"protocol": "MQTT"</div>
+          <div style="color: #ffa726;">}</div>
+        </div>
+      </div>
+
+      <!-- 协议映射层 -->
+      <div class="automation-card" id="protocolCard">
+        <div class="automation-card-header">
+          <div class="automation-name">🔄 协议映射层</div>
+          <span class="status-badge online">动态适配</span>
+        </div>
+        <div class="automation-description">支持多品牌设备协议自动转换</div>
+        <div style="margin-top: 12px;">
+          <div style="font-size: 11px; color: #78909c; margin-bottom: 6px;">支持协议</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span style="padding: 3px 8px; background: rgba(79,195,247,0.2); color: #4fc3f7; border-radius: 4px; font-size: 11px;">MQTT</span>
+            <span style="padding: 3px 8px; background: rgba(102,187,106,0.2); color: #66bb6a; border-radius: 4px; font-size: 11px;">CoAP</span>
+            <span style="padding: 3px 8px; background: rgba(255,167,38,0.2); color: #ffa726; border-radius: 4px; font-size: 11px;">Zigbee</span>
+            <span style="padding: 3px 8px; background: rgba(239,83,80,0.2); color: #ef5350; border-radius: 4px; font-size: 11px;">Z-Wave</span>
+            <span style="padding: 3px 8px; background: rgba(171,71,188,0.2); color: #ab47bc; border-radius: 4px; font-size: 11px;">WiFi</span>
+          </div>
+        </div>
+        <div style="margin-top: 10px;">
+          <div style="font-size: 11px; color: #78909c; margin-bottom: 4px;">已注册设备</div>
+          <div style="font-size: 28px; color: #4fc3f7; font-weight: 700;" id="registeredDeviceCount">8</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设备注册演示区域 -->
+    <div id="registrationDemo" style="display: none; background: #1a2736; border: 1px solid #2a3a4a; border-radius: 12px; padding: 16px;">
+      <div style="font-size: 14px; font-weight: 600; color: #e0e0e0; margin-bottom: 12px;">📝 设备注册流程演示</div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;">
+        <div style="text-align: center;">
+          <div style="width: 40px; height: 40px; background: rgba(79,195,247,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; border: 2px solid #4fc3f7;">
+            <span style="font-size: 18px; color: #4fc3f7;">1</span>
+          </div>
+          <div style="font-size: 12px; color: #4fc3f7; font-weight: 600;">设备厂商注册</div>
+          <div style="font-size: 10px; color: #78909c; margin-top: 4px;">提交设备信息</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="width: 40px; height: 40px; background: rgba(102,187,106,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; border: 2px solid #66bb6a;">
+            <span style="font-size: 18px; color: #66bb6a;">2</span>
+          </div>
+          <div style="font-size: 12px; color: #66bb6a; font-weight: 600;">配置MQTT主题</div>
+          <div style="font-size: 10px; color: #78909c; margin-top: 4px;">分配通信主题</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="width: 40px; height: 40px; background: rgba(255,167,38,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; border: 2px solid #ffa726;">
+            <span style="font-size: 18px; color: #ffa726;">3</span>
+          </div>
+          <div style="font-size: 12px; color: #ffa726; font-weight: 600;">定义设备能力</div>
+          <div style="font-size: 10px; color: #78909c; margin-top: 4px;">开关/调节/场景</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="width: 40px; height: 40px; background: rgba(171,71,188,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; border: 2px solid #ab47bc;">
+            <span style="font-size: 18px; color: #ab47bc;">4</span>
+          </div>
+          <div style="font-size: 12px; color: #ab47bc; font-weight: 600;">自动发现上线</div>
+          <div style="font-size: 10px; color: #78909c; margin-top: 4px;">即插即用</div>
+        </div>
+      </div>
+      <div style="padding-top: 12px; border-top: 1px solid #2a3a4a;">
+        <div style="font-size: 11px; color: #78909c; margin-bottom: 8px;">模拟注册新设备</div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" id="newDeviceName" placeholder="设备名称 (如: 智能灯泡)" style="flex: 1; padding: 6px 10px; background: #0f1923; border: 1px solid #2a3a4a; border-radius: 6px; color: #e0e0e0; font-size: 12px;">
+          <select id="newDeviceType" style="padding: 6px 10px; background: #0f1923; border: 1px solid #2a3a4a; border-radius: 6px; color: #e0e0e0; font-size: 12px;">
+            <option value="light">💡 灯光</option>
+            <option value="ac">❄️ 空调</option>
+            <option value="curtain">🪟 窗帘</option>
+            <option value="appliance">📺 电器</option>
+            <option value="lock">🔒 门锁</option>
+          </select>
+          <select id="newDeviceProtocol" style="padding: 6px 10px; background: #0f1923; border: 1px solid #2a3a4a; border-radius: 6px; color: #e0e0e0; font-size: 12px;">
+            <option value="MQTT">MQTT</option>
+            <option value="CoAP">CoAP</option>
+            <option value="Zigbee">Zigbee</option>
+            <option value="WiFi">WiFi</option>
+          </select>
+          <button class="scene-btn" id="btnRegisterNewDevice" style="padding: 6px 16px;">注册</button>
+        </div>
+      </div>
+      <div id="registrationLog" style="margin-top: 10px; font-family: Consolas; font-size: 11px; color: #78909c; max-height: 120px; overflow-y: auto; background: #0f1923; padding: 8px; border-radius: 6px; border: 1px solid #2a3a4a;"></div>
+    </div>
+  `
+  container.appendChild(section)
+}
+
+function createDeviceCard(device) {
+  const state = deviceStates[device.id]
+  const card = document.createElement('div')
+  const isOn = device.type === 'lock' ? !state.locked : state.on
+  card.className = `device-card ${isOn ? 'on' : ''}`
+  card.id = `card-${device.id}`
+
+  let bodyHTML = ''
+
+  if (device.type === 'light') {
+    const brightness = state.brightness || 0
+    bodyHTML = `
+      <div class="card-status ${isOn ? 'on' : ''}">
+        <span class="status-indicator ${isOn ? 'on' : 'off'}"></span>
+        ${isOn ? `亮度 ${brightness}%` : '已关闭'}
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${isOn ? brightness : 0}%"></div></div>
+    `
+  } else if (device.type === 'ac') {
+    const temp = state.temperature || 24
+    bodyHTML = `
+      <div class="card-status ${isOn ? 'on' : ''}">
+        <span class="status-indicator ${isOn ? 'on' : 'off'}"></span>
+        ${isOn ? `制冷模式` : '已关闭'}
+      </div>
+      <div class="temp-control">
+        <button class="temp-btn" onclick="event.stopPropagation(); sendCmd('${device.id}','set_temperature',${temp - 1})">−</button>
+        <span class="temp-value">${temp}℃</span>
+        <button class="temp-btn" onclick="event.stopPropagation(); sendCmd('${device.id}','set_temperature',${temp + 1})">+</button>
+      </div>
+    `
+  } else if (device.type === 'curtain') {
+    const level = state.level || 0
+    bodyHTML = `
+      <div class="card-status ${isOn ? 'on' : ''}">
+        <span class="status-indicator ${isOn ? 'on' : 'off'}"></span>
+        ${isOn ? `开合度 ${level}%` : '已关闭'}
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${isOn ? level : 0}%"></div></div>
+    `
+  } else if (device.type === 'lock') {
+    bodyHTML = `
+      <div class="card-status ${!state.locked ? 'on' : ''}">
+        <span class="lock-icon ${state.locked ? 'locked' : 'unlocked'}">${state.locked ? '🔒' : '🔓'}</span>
+        ${state.locked ? '已锁定' : '已解锁'}
+      </div>
+    `
+  } else {
+    // appliance
+    let extra = ''
+    if (device.id === 'air_purifier' && state.aqi) {
+      extra = `<br>AQI ${state.aqi}`
+    }
+    bodyHTML = `
+      <div class="card-status ${isOn ? 'on' : ''}">
+        <span class="status-indicator ${isOn ? 'on' : 'off'}"></span>
+        ${isOn ? '运行中' : '已关闭'}${extra}
+      </div>
+    `
+  }
+
+  card.innerHTML = `
+    <div class="card-header">
+      <span class="card-icon">${device.icon}</span>
+      <button class="card-toggle ${isOn ? 'on' : ''}" onclick="event.stopPropagation(); toggleDevice('${device.id}')"></button>
+    </div>
+    <div class="card-name">${device.name}</div>
+    ${bodyHTML}
+  `
+
+  return card
+}
+
+function updateOnlineCount() {
+  const total = DEVICES.length
+  const online = Object.values(deviceStates).filter(s => s.online !== false).length
+  document.getElementById('onlineCount').textContent = `设备: ${online}/${total} 在线`
+}
+
+// ============================================================
+//  WebSocket 连接
+// ============================================================
+
+let ws = null
+let reconnectTimer = null
+
+function connectWS() {
+  const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+  ws = new WebSocket(`${protocol}//${location.host}`)
+
+  ws.onopen = () => {
+    console.log('WebSocket 已连接')
+    setConnectionStatus(true)
+    // 请求当前状态
+    ws.send(JSON.stringify({ type: 'query_all' }))
+  }
+
+  ws.onmessage = (event) => {
+    try {
+      const msg = JSON.parse(event.data)
+      handleWSMessage(msg)
+    } catch (e) {
+      console.error('消息解析失败:', e)
+    }
+  }
+
+  ws.onclose = () => {
+    console.log('WebSocket 断开')
+    setConnectionStatus(false)
+    scheduleReconnect()
+  }
+
+  ws.onerror = (err) => {
+    console.error('WebSocket 错误:', err)
+  }
+}
+
+function scheduleReconnect() {
+  if (reconnectTimer) return
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null
+    connectWS()
+  }, 3000)
+}
+
+function handleWSMessage(msg) {
+  if (msg.type === 'state_update') {
+    // 单个设备状态更新
+    const data = msg.data
+    if (data && data.id && deviceStates[data.id]) {
+      Object.assign(deviceStates[data.id], data)
+      updateDeviceCard(data.id)
+      addLog(`📤 ${data.name || data.id} 状态更新`, 'state')
+    }
+  } else if (msg.type === 'all_states') {
+    // 所有设备状态
+    const states = msg.data
+    if (states) {
+      Object.keys(states).forEach(id => {
+        if (deviceStates[id]) {
+          Object.assign(deviceStates[id], states[id])
+        }
+      })
+      render()
+      addLog('📊 已同步所有设备状态', 'state')
+    }
+  } else if (msg.type === 'command_received') {
+    addLog(`📩 指令: ${msg.data}`, 'cmd')
+  } else if (msg.type === 'mqtt_status') {
+    setConnectionStatus(msg.connected)
+  } else if (msg.type === 'temperature_update') {
+    updateEnvironmentPanel(msg.data)
+  } else if (msg.type === 'time_update') {
+    updateTimePanel(msg.data)
+  } else if (msg.type === 'automations_update') {
+    renderAutomations(msg.data)
+  } else if (msg.type === 'automation_triggered') {
+    addLog(`🤖 自动化执行: ${msg.data.name}`, 'cmd')
+  } else if (msg.type === 'sync_status') {
+    addLog(`🔄 ${msg.data.message}`, 'state')
+  }
+}
+
+function updateDeviceCard(deviceId) {
+  // 重新渲染整个页面（简单可靠）
+  render()
+}
+
+function setConnectionStatus(connected) {
+  const badge = document.getElementById('connBadge')
+  const dot = document.getElementById('connDot')
+  const text = document.getElementById('connText')
+  badge.className = `status-badge ${connected ? 'online' : 'offline'}`
+  dot.className = `status-dot ${connected ? 'online' : 'offline'}`
+  text.textContent = connected ? '已连接' : '未连接'
+}
+
+// ============================================================
+//  发送指令
+// ============================================================
+
+function sendCmd(deviceId, action, value) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+  const msg = { type: 'command', deviceId, action }
+  if (value !== undefined) msg.value = value
+  ws.send(JSON.stringify(msg))
+  addLog(`📤 发送: ${deviceId} → ${action}${value !== undefined ? ' ' + value : ''}`, 'cmd')
+}
+
+function toggleDevice(deviceId) {
+  const state = deviceStates[deviceId]
+  const device = DEVICES.find(d => d.id === deviceId)
+  if (!device) return
+
+  if (device.type === 'lock') {
+    sendCmd(deviceId, state.locked ? 'on' : 'off')
+  } else {
+    sendCmd(deviceId, state.on ? 'off' : 'on')
+  }
+}
+
+function sendScene(action) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+  ws.send(JSON.stringify({ type: 'command', deviceId: 'living_room_light', action }))
+  addLog(`🎬 场景: ${action}`, 'cmd')
+}
+
+function refreshSync() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+  ws.send(JSON.stringify({ type: 'refresh_sync' }))
+  addLog('🔄 正在刷新同步...', 'cmd')
+}
+
+// ============================================================
+//  室内环境控制
+// ============================================================
+
+let currentRoomTemp = 26
+let currentTimeState = null
+let automations = []
+let isTimeSettingMode = false
+
+function updateEnvironmentPanel(data) {
+  if (data.temperature !== undefined) {
+    currentRoomTemp = data.temperature
+    const tempEl = document.getElementById('roomTemp')
+    tempEl.textContent = `${data.temperature}℃`
+
+    // 根据温度设置颜色
+    tempEl.className = 'env-value'
+    if (data.temperature >= 30) {
+      tempEl.classList.add('hot')
+    } else if (data.temperature <= 20) {
+      tempEl.classList.add('cool')
+    } else {
+      tempEl.classList.add('warm')
+    }
+
+    // 更新输入框
+    document.getElementById('tempInput').value = data.temperature
+  }
+
+  if (data.humidity !== undefined) {
+    document.getElementById('roomHumidity').textContent = `${data.humidity}%`
+  }
+
+  if (data.outdoorTemperature !== undefined) {
+    document.getElementById('outdoorTemp').textContent = `${data.outdoorTemperature}℃`
+  }
+
+  // 空调状态
+  const acStatusEl = document.getElementById('acStatus')
+  if (data.acCooling) {
+    acStatusEl.textContent = '❄️ 空调制冷中'
+    acStatusEl.className = 'env-status cooling'
+  } else {
+    acStatusEl.textContent = '空调关闭'
+    acStatusEl.className = 'env-status'
+  }
+
+  addLog(`🌡️ 室温更新: ${data.temperature}℃ (目标: ${data.targetTemperature}℃)`, 'state')
+}
+
+function applyRoomTemperature() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+
+  const temp = parseFloat(document.getElementById('tempInput').value)
+  if (isNaN(temp) || temp < 10 || temp > 40) {
+    addLog('❌ 温度请输入 10-40 之间的数值', 'error')
+    return
+  }
+
+  ws.send(JSON.stringify({
+    type: 'set_temperature',
+    temperature: temp
+  }))
+
+  addLog(`🌡️ 设置室温: ${temp}℃`, 'cmd')
+}
+
+// ============================================================
+//  时间模拟控制
+// ============================================================
+
+function updateTimePanel(data) {
+  currentTimeState = data
+
+  // 如果不在设置模式，更新时钟显示
+  if (!isTimeSettingMode) {
+    document.getElementById('timeClock').textContent = data.formatted
+  }
+}
+
+function toggleTimeSetting() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+
+  isTimeSettingMode = true
+
+  // 暂停时间模拟
+  ws.send(JSON.stringify({
+    type: 'set_time',
+    pause: true
+  }))
+
+  // 显示输入框，隐藏设置按钮
+  document.getElementById('timeInputGroup').style.display = 'flex'
+  document.getElementById('timeSettingBtn').style.display = 'none'
+  document.getElementById('timeModeBadge').textContent = '已暂停'
+  document.getElementById('timeModeBadge').className = 'time-mode-badge simulated'
+
+  // 填充当前时间到输入框
+  if (currentTimeState) {
+    document.getElementById('timeInputHour').value = currentTimeState.hour
+    document.getElementById('timeInputMinute').value = currentTimeState.minute
+  }
+
+  addLog('⏰ 时间已暂停，请设置时间', 'cmd')
+}
+
+function confirmTimeSetting() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+
+  const hour = parseInt(document.getElementById('timeInputHour').value)
+  const minute = parseInt(document.getElementById('timeInputMinute').value)
+
+  if (isNaN(hour) || hour < 0 || hour > 23) {
+    addLog('❌ 小时请输入 0-23 之间的整数', 'error')
+    return
+  }
+  if (isNaN(minute) || minute < 0 || minute > 59) {
+    addLog('❌ 分钟请输入 0-59 之间的整数', 'error')
+    return
+  }
+
+  // 发送设置时间并恢复运行
+  ws.send(JSON.stringify({
+    type: 'set_time',
+    hour: hour,
+    minute: minute,
+    pause: false
+  }))
+
+  // 恢复界面
+  isTimeSettingMode = false
+  document.getElementById('timeInputGroup').style.display = 'none'
+  document.getElementById('timeSettingBtn').style.display = 'block'
+  document.getElementById('timeModeBadge').textContent = '运行中'
+  document.getElementById('timeModeBadge').className = 'time-mode-badge real'
+
+  // 更新时钟显示
+  document.getElementById('timeClock').textContent =
+    `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`
+
+  addLog(`⏰ 时间已设置: ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`, 'cmd')
+}
+
+function cancelTimeSetting() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+
+  // 恢复时间运行（不修改时间）
+  ws.send(JSON.stringify({
+    type: 'set_time',
+    pause: false
+  }))
+
+  // 恢复界面
+  isTimeSettingMode = false
+  document.getElementById('timeInputGroup').style.display = 'none'
+  document.getElementById('timeSettingBtn').style.display = 'block'
+  document.getElementById('timeModeBadge').textContent = '运行中'
+  document.getElementById('timeModeBadge').className = 'time-mode-badge real'
+
+  addLog('⏰ 已取消时间设置', 'cmd')
+}
+
+function resetAutomationExecutions() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+
+  ws.send(JSON.stringify({
+    type: 'set_time',
+    resetExecuted: true
+  }))
+
+  addLog(`🔄 已重置定时任务执行记录`, 'cmd')
+}
+
+// ============================================================
+//  自动化场景渲染
+// ============================================================
+
+const AUTOMATION_ICONS = {
+  'morning_curtain': '🌅',
+  'home_mode': '🏡',
+  'leave_mode': '🏠',
+  'movie_mode': '🎬',
+  'night_mode': '🌙'
+}
+
+function renderAutomations(data) {
+  automations = data
+  const grid = document.getElementById('automationsGrid')
+  grid.innerHTML = ''
+
+  data.forEach(auto => {
+    const card = document.createElement('div')
+    card.className = 'automation-card'
+    card.id = `automation-${auto.id}`
+
+    const icon = AUTOMATION_ICONS[auto.id] || '⚙️'
+    const triggerText = auto.trigger.type === 'time'
+      ? `⏰ ${String(auto.trigger.hour).padStart(2, '0')}:${String(auto.trigger.minute).padStart(2, '0')}`
+      : `🎬 ${auto.trigger.sceneName?.replace('scene_', '') || ''}`
+
+    card.innerHTML = `
+      <div class="automation-card-header">
+        <div class="automation-name">${icon} ${auto.name}</div>
+        <button class="automation-toggle ${auto.enabled ? 'on' : ''}"
+                onclick="event.stopPropagation(); toggleAutomation('${auto.id}', ${!auto.enabled})">
+        </button>
+      </div>
+      <div class="automation-description">${auto.description}</div>
+      <div>
+        <span class="automation-trigger">${triggerText}</span>
+        <span class="automation-actions-count">${auto.actionsCount} 个动作</span>
+      </div>
+      <button class="automation-execute-btn" onclick="event.stopPropagation(); executeAutomation('${auto.id}')">
+        ▶ 手动执行
+      </button>
+    `
+
+    grid.appendChild(card)
+  })
+}
+
+function toggleAutomation(automationId, enabled) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+
+  ws.send(JSON.stringify({
+    type: 'automation_control',
+    automationId: automationId,
+    enabled: enabled
+  }))
+
+  const auto = automations.find(a => a.id === automationId)
+  addLog(`🤖 ${auto?.name || automationId}: ${enabled ? '启用' : '禁用'}`, 'cmd')
+}
+
+function executeAutomation(automationId) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    addLog('❌ WebSocket 未连接', 'error')
+    return
+  }
+
+  ws.send(JSON.stringify({
+    type: 'automation_control',
+    automationId: automationId,
+    action: 'execute'
+  }))
+
+  const auto = automations.find(a => a.id === automationId)
+  addLog(`▶ 手动执行: ${auto?.name || automationId}`, 'cmd')
+}
+
+// ============================================================
+//  协议安全演示
+// ============================================================
+
+function simulateEncryption() {
+  const demo = document.getElementById('encryptionDemo')
+  if (!demo) {
+    addLog('❌ 加密演示区域未找到', 'error')
+    return
+  }
+  if (demo.style.display === 'none' || demo.style.display === '') {
+    // 展开演示区域，添加动画效果
+    demo.style.display = 'block'
+    demo.style.opacity = '0'
+    demo.style.transform = 'translateY(-10px)'
+    demo.style.transition = 'opacity 0.3s, transform 0.3s'
+
+    // 触发动画
+    setTimeout(() => {
+      demo.style.opacity = '1'
+      demo.style.transform = 'translateY(0)'
+    }, 10)
+
+    addLog('🔐 开始加密演示...', 'cmd')
+
+    // 模拟 TLS 握手（带延迟动画）
+    setTimeout(() => {
+      const tlsEl = document.getElementById('tlsHandshake')
+      if (tlsEl) {
+        tlsEl.textContent = '正在握手...'
+        tlsEl.style.color = '#ffa726'
+      }
+      addLog('📡 TLS 1.3 握手中...', 'state')
+    }, 200)
+
+    setTimeout(() => {
+      const tlsEl = document.getElementById('tlsHandshake')
+      if (tlsEl) {
+        tlsEl.textContent = '握手完成 ✓'
+        tlsEl.style.color = '#66bb6a'
+      }
+      addLog('✅ TLS 1.3 握手完成', 'state')
+    }, 800)
+
+    // 模拟加密过程
+    setTimeout(() => {
+      const original = '{"action":"on","device":"light"}'
+      const originalEl = document.getElementById('originalCommand')
+      if (originalEl) {
+        originalEl.textContent = original
+        originalEl.style.borderColor = '#4fc3f7'
+      }
+
+      // 生成模拟加密后的字符串
+      const encrypted = btoa(original).split('').reverse().join('') + '...[AES-256-GCM]'
+      const encryptedEl = document.getElementById('encryptedCommand')
+      if (encryptedEl) {
+        encryptedEl.textContent = '加密中...'
+        encryptedEl.style.color = '#ffa726'
+      }
+
+      addLog('🔐 AES-256 加密中...', 'state')
+    }, 1000)
+
+    setTimeout(() => {
+      const original = '{"action":"on","device":"light"}'
+      const encrypted = btoa(original).split('').reverse().join('') + '...[AES-256-GCM]'
+      const encryptedEl = document.getElementById('encryptedCommand')
+      if (encryptedEl) {
+        encryptedEl.textContent = encrypted
+        encryptedEl.style.color = '#66bb6a'
+        encryptedEl.style.borderColor = '#66bb6a'
+      }
+
+      // 生成模拟密钥
+      const key = generateRandomHex(64)
+      const aesKeyEl = document.getElementById('aesKey')
+      if (aesKeyEl) {
+        aesKeyEl.textContent = key.substring(0, 16) + '...' + key.substring(48)
+        aesKeyEl.style.borderColor = '#4fc3f7'
+      }
+
+      addLog('✅ AES-256 加密完成', 'state')
+    }, 1500)
+
+    // 解密演示
+    setTimeout(() => {
+      const original = '{"action":"on","device":"light"}'
+      const decryptedEl = document.getElementById('decryptedCommand')
+      if (decryptedEl) {
+        decryptedEl.textContent = '解密中...'
+        decryptedEl.style.color = '#ffa726'
+      }
+      addLog('🔓 解密中...', 'state')
+    }, 2000)
+
+    setTimeout(() => {
+      const original = '{"action":"on","device":"light"}'
+      const decryptedEl = document.getElementById('decryptedCommand')
+      if (decryptedEl) {
+        decryptedEl.textContent = original
+        decryptedEl.style.color = '#66bb6a'
+        decryptedEl.style.borderColor = '#66bb6a'
+      }
+
+      const aesStatusEl = document.getElementById('aesEncryptStatus')
+      if (aesStatusEl) {
+        aesStatusEl.textContent = '加密完成 ✓'
+        aesStatusEl.style.color = '#66bb6a'
+      }
+
+      addLog('✅ 解密完成，指令已还原', 'state')
+    }, 2500)
+
+    // 密钥轮换
+    setTimeout(() => {
+      const keyRotationEl = document.getElementById('lastKeyRotation')
+      if (keyRotationEl) {
+        keyRotationEl.textContent = '刚刚 ✓'
+        keyRotationEl.style.color = '#66bb6a'
+      }
+      addLog('✅ 密钥轮换完成', 'state')
+    }, 3000)
+
+  } else {
+    // 收起演示区域，添加动画效果
+    demo.style.opacity = '0'
+    demo.style.transform = 'translateY(-10px)'
+    setTimeout(() => {
+      demo.style.display = 'none'
+    }, 300)
+    addLog('🔐 加密演示已关闭', 'cmd')
+  }
+}
+
+function generateRandomHex(length) {
+  const chars = '0123456789ABCDEF'
+  let result = ''
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
+}
+
+// ============================================================
+//  可扩展性演示
+// ============================================================
+
+let registeredDevices = [
+  { id: 'living_room_light', name: '客厅主灯', type: 'light', protocol: 'MQTT', status: 'online' },
+  { id: 'study_light', name: '书房灯', type: 'light', protocol: 'MQTT', status: 'online' },
+  { id: 'range_hood', name: '油烟机', type: 'appliance', protocol: 'MQTT', status: 'online' },
+  { id: 'air_purifier', name: '空气净化器', type: 'appliance', protocol: 'MQTT', status: 'online' },
+  { id: 'ac', name: '空调', type: 'ac', protocol: 'MQTT', status: 'online' },
+  { id: 'curtain', name: '电动窗帘', type: 'curtain', protocol: 'MQTT', status: 'online' },
+  { id: 'projector', name: '投影仪', type: 'appliance', protocol: 'MQTT', status: 'online' },
+  { id: 'door_lock', name: '智能门锁', type: 'lock', protocol: 'MQTT', status: 'online' }
+]
+
+function showDeviceRegistration() {
+  const demo = document.getElementById('registrationDemo')
+  if (!demo) {
+    addLog('❌ 设备注册演示区域未找到', 'error')
+    return
+  }
+  if (demo.style.display === 'none' || demo.style.display === '') {
+    // 展开演示区域，添加动画效果
+    demo.style.display = 'block'
+    demo.style.opacity = '0'
+    demo.style.transform = 'translateY(-10px)'
+    demo.style.transition = 'opacity 0.3s, transform 0.3s'
+
+    // 触发动画
+    setTimeout(() => {
+      demo.style.opacity = '1'
+      demo.style.transform = 'translateY(0)'
+    }, 10)
+
+    addLog('📝 设备注册演示已打开', 'cmd')
+
+    // 延迟显示日志，模拟加载过程
+    setTimeout(() => {
+      updateRegistrationLog('✅ 系统就绪，等待新设备注册...')
+    }, 300)
+
+    setTimeout(() => {
+      updateRegistrationLog('📡 MQTT Broker 连接正常')
+    }, 600)
+
+    setTimeout(() => {
+      updateRegistrationLog('🔗 协议映射层已加载')
+    }, 900)
+
+  } else {
+    // 收起演示区域，添加动画效果
+    demo.style.opacity = '0'
+    demo.style.transform = 'translateY(-10px)'
+    setTimeout(() => {
+      demo.style.display = 'none'
+    }, 300)
+    addLog('📝 设备注册演示已关闭', 'cmd')
+  }
+}
+
+function registerNewDevice() {
+  const name = document.getElementById('newDeviceName').value.trim()
+  const type = document.getElementById('newDeviceType').value
+  const protocol = document.getElementById('newDeviceProtocol').value
+
+  if (!name) {
+    addLog('❌ 请输入设备名称', 'error')
+    // 输入框闪烁效果
+    const nameInput = document.getElementById('newDeviceName')
+    nameInput.style.borderColor = '#ef5350'
+    nameInput.style.animation = 'shake 0.5s'
+    setTimeout(() => {
+      nameInput.style.borderColor = '#2a3a4a'
+      nameInput.style.animation = ''
+    }, 500)
+    return
+  }
+
+  const deviceId = name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now().toString(36)
+
+  // 禁用输入和按钮，显示加载状态
+  const nameInput = document.getElementById('newDeviceName')
+  const typeSelect = document.getElementById('newDeviceType')
+  const protocolSelect = document.getElementById('newDeviceProtocol')
+  const registerBtn = document.getElementById('btnRegisterNewDevice')
+
+  nameInput.disabled = true
+  typeSelect.disabled = true
+  protocolSelect.disabled = true
+  registerBtn.disabled = true
+
+  addLog(`📝 开始注册设备: ${name}`, 'cmd')
+
+  // 模拟注册过程（带延迟动画）
+  setTimeout(() => {
+    updateRegistrationLog(`[1/4] ⏳ 收到注册请求: ${name} (${type})`)
+    addLog(`[1/4] 收到注册请求`, 'state')
+  }, 200)
+
+  setTimeout(() => {
+    updateRegistrationLog(`[2/4] ⚙️ 配置 MQTT 主题:`)
+    updateRegistrationLog(`      状态主题: home/device/${deviceId}/state`)
+    updateRegistrationLog(`      指令主题: home/device/${deviceId}/command`)
+    addLog(`[2/4] 配置 MQTT 主题`, 'state')
+  }, 600)
+
+  setTimeout(() => {
+    updateRegistrationLog(`[3/4] 📋 定义设备能力: ${getCapabilitiesByType(type)}`)
+    addLog(`[3/4] 定义设备能力`, 'state')
+  }, 1000)
+
+  setTimeout(() => {
+    updateRegistrationLog(`[4/4] ✅ 设备注册成功，已自动上线!`)
+
+    // 添加到已注册设备列表
+    registeredDevices.push({
+      id: deviceId,
+      name: name,
+      type: type,
+      protocol: protocol,
+      status: 'online'
+    })
+
+    // 更新设备数量显示（带动画效果）
+    const countEl = document.getElementById('registeredDeviceCount')
+    countEl.textContent = registeredDevices.length
+    countEl.style.color = '#66bb6a'
+    countEl.style.transform = 'scale(1.2)'
+    countEl.style.transition = 'transform 0.3s'
+    setTimeout(() => {
+      countEl.style.transform = 'scale(1)'
+    }, 300)
+
+    addLog(`✅ 新设备注册成功: ${name} (${protocol})`, 'state')
+
+    // 通知服务器
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
+        type: 'device_register',
+        device: {
+          id: deviceId,
+          name: name,
+          type: type,
+          protocol: protocol
+        }
+      }))
+    }
+
+    // 恢复输入和按钮状态
+    nameInput.disabled = false
+    typeSelect.disabled = false
+    protocolSelect.disabled = false
+    registerBtn.disabled = false
+
+    // 清空输入
+    nameInput.value = ''
+
+    // 成功提示
+    registerBtn.textContent = '✅ 注册成功'
+    registerBtn.style.background = '#66bb6a'
+    setTimeout(() => {
+      registerBtn.textContent = '注册'
+      registerBtn.style.background = ''
+    }, 1500)
+
+  }, 1400)
+}
+
+function getCapabilitiesByType(type) {
+  const capabilities = {
+    'light': '开/关, 亮度调节',
+    'ac': '开/关, 温度调节, 模式切换',
+    'curtain': '开/关, 开合度调节',
+    'appliance': '开/关',
+    'lock': '锁定/解锁'
+  }
+  return capabilities[type] || '开/关'
+}
+
+function updateRegistrationLog(message) {
+  const log = document.getElementById('registrationLog')
+  const time = new Date().toLocaleTimeString()
+  log.innerHTML = `<div>[${time}] ${message}</div>` + log.innerHTML
+
+  // 最多保留 20 条
+  while (log.children.length > 20) {
+    log.removeChild(log.lastChild)
+  }
+}
+
+// ============================================================
+//  日志
+// ============================================================
+
+function addLog(text, type = '') {
+  const logBody = document.getElementById('logBody')
+  const entry = document.createElement('div')
+  entry.className = `log-entry ${type}`
+  const time = new Date().toLocaleTimeString()
+  entry.innerHTML = `<span class="time">${time}</span>${text}`
+  logBody.prepend(entry)
+
+  // 最多保留 100 条
+  while (logBody.children.length > 100) {
+    logBody.removeChild(logBody.lastChild)
+  }
+}
+
+function toggleLog() {
+  logExpanded = !logExpanded
+  document.getElementById('logBody').className = `log-body ${logExpanded ? '' : 'collapsed'}`
+  document.getElementById('logToggle').textContent = logExpanded ? '▲ 收起' : '▼ 展开'
+}
+
+// ============================================================
+//  初始化
+// ============================================================
+
+render()
+connectWS()
+</script>
+</body>
+</html>
